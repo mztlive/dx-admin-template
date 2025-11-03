@@ -23,29 +23,29 @@ impl NavigationItem {
 
 #[component]
 pub fn NavigationMenu(#[props(into)] items: Vec<NavigationItem>) -> Element {
-    let active = use_signal(|| 0usize);
+    let active = use_signal(|| None::<usize>);
 
     let trigger_nodes: Vec<_> = items
         .iter()
         .enumerate()
         .map(|(index, item)| {
             let mut active_signal = active.clone();
-            let is_active = active() == index;
+            let is_active = active().is_some_and(|current| current == index);
 
             rsx! {
                 button {
                     class: "ui-navmenu-trigger",
                     "data-open": if is_active { "true" } else { "false" },
-                    onmouseenter: move |_| active_signal.set(index),
-                    onclick: move |_| active_signal.set(index),
+                    onmouseenter: move |_| active_signal.set(Some(index)),
+                    onclick: move |_| active_signal.set(Some(index)),
                     "{item.label}"
                 }
             }
         })
         .collect();
 
-    let selected_content = items
-        .get(active().min(items.len().saturating_sub(1)))
+    let selected_content = active()
+        .and_then(|index| items.get(index))
         .map(|item| {
             let description = item.description.clone();
             rsx! {
@@ -63,9 +63,12 @@ pub fn NavigationMenu(#[props(into)] items: Vec<NavigationItem>) -> Element {
             }
         });
 
+    let mut reset_active = active.clone();
+
     rsx! {
         div {
             class: "ui-navmenu",
+            onmouseleave: move |_| reset_active.set(None),
             {trigger_nodes.into_iter()}
             if let Some(content) = selected_content {
                 {content}

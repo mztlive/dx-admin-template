@@ -1038,6 +1038,12 @@
     z-index: 45;
 }
 
+.ui-popover-trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
 .ui-popover[data-placement="top"] {
     transform: translate(-50%, -0.75rem);
 }
