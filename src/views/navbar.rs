@@ -1,8 +1,9 @@
 use crate::{
     components::ui::{
-        Avatar, Button, ButtonVariant, Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
-        SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout,
-        SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail, SidebarSeparator,
+        Avatar, Button, ButtonSize, ButtonVariant, Sidebar, SidebarContent, SidebarFooter,
+        SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset,
+        SidebarLayout, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail,
+        SidebarSeparator,
     },
     Route,
 };
@@ -25,7 +26,7 @@ pub fn Navbar() -> Element {
         "ui-shell shadcn"
     };
 
-    let title = page_title(&current_route);
+    let _title = page_title(&current_route);
     let is_dashboard = matches!(current_route, Route::Home { .. });
     let is_components = matches!(current_route, Route::Components { .. });
 
@@ -138,7 +139,8 @@ pub fn Navbar() -> Element {
                         }
                         div { class: "admin-shell-actions",
                             Button {
-                                variant: ButtonVariant::Secondary,
+                                variant: ButtonVariant::Icon,
+                                size: ButtonSize::Icon,
                                 class: Some("admin-shell-theme".to_string()),
                                 r#type: "button".to_string(),
                                 on_click: move |_| {
@@ -146,7 +148,12 @@ pub fn Navbar() -> Element {
                                     let current = handle();
                                     handle.set(!current);
                                 },
-                                "{theme_label()}"
+                                if is_dark() {
+                                    SunIcon {}
+                                } else {
+                                    MoonIcon {}
+                                }
+                                span { class: "sr-only", "{theme_label()}" }
                             }
                         }
                     }
@@ -156,6 +163,48 @@ pub fn Navbar() -> Element {
                     }
                 }
             }
+        }
+    }
+}
+
+#[component]
+fn SunIcon() -> Element {
+    rsx! {
+        svg {
+            class: "theme-toggle-icon",
+            xmlns: "http://www.w3.org/2000/svg",
+            view_box: "0 0 24 24",
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            stroke_linecap: "round",
+            stroke_linejoin: "round",
+            circle { cx: "12", cy: "12", r: "4" }
+            path { d: "M12 2v2" }
+            path { d: "M12 20v2" }
+            path { d: "M4.93 4.93l1.41 1.41" }
+            path { d: "M17.66 17.66l1.41 1.41" }
+            path { d: "M2 12h2" }
+            path { d: "M20 12h2" }
+            path { d: "M6.34 17.66l-1.41 1.41" }
+            path { d: "M17.66 6.34l1.41-1.41" }
+        }
+    }
+}
+
+#[component]
+fn MoonIcon() -> Element {
+    rsx! {
+        svg {
+            class: "theme-toggle-icon",
+            xmlns: "http://www.w3.org/2000/svg",
+            view_box: "0 0 24 24",
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "1.5",
+            stroke_linecap: "round",
+            stroke_linejoin: "round",
+            path { d: "M21 12.79A9 9 0 0 1 11.21 3 7 7 0 1 0 21 12.79z" }
         }
     }
 }
