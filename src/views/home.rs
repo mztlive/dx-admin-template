@@ -113,7 +113,11 @@ pub fn Home() -> Element {
     rsx! {
         div {
             class: "dashboard-root",
-            style: "display: flex; flex-direction: column; gap: 24px;",
+            div {
+                class: "page-heading",
+                h1 { "Dashboard overview" }
+                p { "Track product health, monitor key funnels, and coordinate the team from one place." }
+            }
             section {
                 class: "dashboard-kpis",
                 style: "display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));",
@@ -266,7 +270,15 @@ pub fn Home() -> Element {
 #[component]
 pub fn Components() -> Element {
     rsx! {
-        UiShowcase {}
+        div {
+            class: "component-page",
+            div {
+                class: "page-heading",
+                h1 { "Component library" }
+                p { "Browse every primitive wired into this starter so new screens stay consistent." }
+            }
+            UiShowcase {}
+        }
     }
 }
 #[component]

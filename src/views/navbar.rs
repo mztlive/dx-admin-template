@@ -1,46 +1,53 @@
 use crate::{
     components::ui::{
-        Avatar, Badge, BadgeVariant, Button, ButtonVariant, Sidebar, SidebarContent, SidebarFooter,
-        SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset,
-        SidebarLayout, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail,
-        SidebarSeparator, SidebarTrigger,
+        Avatar, Button, ButtonVariant, Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
+        SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout,
+        SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail, SidebarSeparator,
     },
     Route,
 };
 use dioxus::prelude::*;
 
-fn page_meta(route: &Route) -> (&'static str, &'static str) {
+fn page_title(route: &Route) -> &'static str {
     match route {
-        Route::Home {} => (
-            "Dashboard overview",
-            "Track product health, monitor key funnels, and coordinate the team from one place.",
-        ),
-        Route::Components {} => (
-            "Component library",
-            "Browse every primitive wired into this starter so new views stay consistent.",
-        ),
+        Route::Home {} => "Dashboard overview",
+        Route::Components {} => "Component library",
     }
 }
 
 #[component]
 pub fn Navbar() -> Element {
-    let collapsed = use_signal(|| false);
     let current_route: Route = use_route();
-    let collapsed_state = collapsed();
-    let collapsed_setter = collapsed.clone();
+    let is_dark = use_signal(|| false);
+    let shell_class = if is_dark() {
+        "ui-shell shadcn dark"
+    } else {
+        "ui-shell shadcn"
+    };
 
-    let (page_title, page_description) = page_meta(&current_route);
+    let title = page_title(&current_route);
     let is_dashboard = matches!(current_route, Route::Home { .. });
     let is_components = matches!(current_route, Route::Components { .. });
 
+    let theme_label = {
+        let is_dark = is_dark.clone();
+        move || {
+            if is_dark() {
+                "Light mode"
+            } else {
+                "Dark mode"
+            }
+        }
+    };
+    let theme_toggle = is_dark.clone();
+
     rsx! {
         section {
-            class: "ui-shell shadcn",
+            class: shell_class,
             SidebarLayout {
                 class: "admin-shell",
-                SidebarRail { }
+                SidebarRail {}
                 Sidebar {
-                    collapsed: collapsed_state,
                     SidebarHeader {
                         div { class: "sidebar-brand",
                             span { class: "sidebar-logo", "⚡" }
@@ -76,7 +83,7 @@ pub fn Navbar() -> Element {
                                 }
                             }
                         }
-                        SidebarSeparator { }
+                        SidebarSeparator {}
                         SidebarGroup {
                             SidebarGroupLabel { "Shortcuts" }
                             SidebarGroupContent {
@@ -126,23 +133,28 @@ pub fn Navbar() -> Element {
                     class: "admin-shell-inset",
                     header {
                         class: "admin-shell-topbar",
-                        SidebarTrigger {
-                            collapsed: collapsed_state,
-                            on_toggle: move |next_collapsed: bool| {
-                                collapsed_setter.clone().set(next_collapsed);
-                            },
+                        div { class: "admin-shell-command",
+                            Button {
+                                variant: ButtonVariant::Ghost,
+                                class: Some("admin-command-button".to_string()),
+                                r#type: "button".to_string(),
+                                "⌘K"
+                            }
                         }
                         div { class: "admin-shell-meta",
-                            h1 { class: "admin-shell-title", "{page_title}" }
-                            p { class: "admin-shell-description", "{page_description}" }
+                            h1 { class: "admin-shell-title", "{title}" }
                         }
                         div { class: "admin-shell-actions",
-                            Badge { variant: BadgeVariant::Secondary, "Operational" }
                             Button {
-                                variant: ButtonVariant::Default,
-                                class: Some("admin-shell-report".to_string()),
+                                variant: ButtonVariant::Secondary,
+                                class: Some("admin-shell-theme".to_string()),
                                 r#type: "button".to_string(),
-                                "New report"
+                                on_click: move |_| {
+                                    let mut handle = theme_toggle.clone();
+                                    let current = handle();
+                                    handle.set(!current);
+                                },
+                                "{theme_label()}"
                             }
                         }
                     }

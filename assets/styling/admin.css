@@ -1,7 +1,7 @@
 :root {
     --sidebar-width: 280px;
     --sidebar-collapsed-width: 72px;
-    --topbar-height: 72px;
+    --topbar-height: 60px;
 }
 
 .ui-shell {
@@ -29,6 +29,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    width: 100%;
     background-color: hsl(var(--card));
     border-right: 1px solid hsl(var(--border));
     padding: 28px 24px;
@@ -106,6 +107,7 @@
 
 .ui-sidebar-menu-button {
     display: inline-flex;
+    align-items: flex-start;
     width: 100%;
     gap: 12px;
     padding: 10px 12px;
@@ -142,16 +144,20 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
+    flex: 1;
+    min-width: 0;
 }
 
 .ui-sidebar-label {
     font-size: 0.9rem;
     font-weight: 600;
+    white-space: normal;
 }
 
 .ui-sidebar-description {
     font-size: 0.75rem;
     color: hsl(var(--muted-foreground));
+    white-space: normal;
 }
 
 .ui-sidebar-badge {
@@ -193,15 +199,32 @@
     position: sticky;
     top: 0;
     z-index: 5;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 18px;
-    justify-content: space-between;
-    padding: 24px 32px;
+    gap: 16px;
+    padding: 0 24px;
     border-bottom: 1px solid hsl(var(--border));
     background-color: hsla(var(--background), 0.95);
     backdrop-filter: blur(12px);
-    min-height: var(--topbar-height);
+    height: var(--topbar-height);
+}
+
+.admin-shell-command {
+    display: flex;
+}
+
+.admin-command-button {
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.45rem 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .admin-shell-meta {
@@ -212,20 +235,19 @@
 
 .admin-shell-title {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
-}
-
-.admin-shell-description {
-    margin: 0;
-    color: hsl(var(--muted-foreground));
-    font-size: 0.95rem;
 }
 
 .admin-shell-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 12px;
+}
+
+.admin-shell-theme {
+    font-weight: 500;
 }
 
 .admin-shell-content {
@@ -241,35 +263,30 @@
     margin: 0;
 }
 
-.ui-sidebar-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid hsl(var(--border));
-    background-color: hsl(var(--card));
-    color: hsl(var(--foreground));
-    border-radius: calc(var(--radius) - 2px);
-    padding: 0.5rem 0.8rem;
-    font-weight: 500;
+.dashboard-root,
+.component-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.ui-sidebar[data-collapsed="true"] .sidebar-name,
-.ui-sidebar[data-collapsed="true"] .sidebar-subtitle,
-.ui-sidebar[data-collapsed="true"] .ui-sidebar-text,
-.ui-sidebar[data-collapsed="true"] .ui-sidebar-badge,
-.ui-sidebar[data-collapsed="true"] .sidebar-profile div,
-.ui-sidebar[data-collapsed="true"] .sidebar-profile-role,
-.ui-sidebar[data-collapsed="true"] .ui-sidebar-group-label {
-    display: none;
+.page-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.ui-sidebar[data-collapsed="true"] .sidebar-profile {
-    justify-content: center;
-    padding: 12px 8px;
+.page-heading h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
-.ui-sidebar[data-collapsed="true"] .ui-sidebar-menu-button {
-    justify-content: center;
+.page-heading p {
+    margin: 0;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.95rem;
+    max-width: 640px;
 }
 
 @media (max-width: 960px) {
