@@ -68,7 +68,11 @@
     justify-content: center;
     line-height: 1;
     padding: 0 1rem;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .ui-button[data-size="sm"] {
@@ -174,7 +178,9 @@
 
 .ui-button:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.6), 0 0 0 4px hsl(var(--background));
+    box-shadow:
+        0 0 0 2px hsl(var(--ring) / 0.6),
+        0 0 0 4px hsl(var(--background));
 }
 
 .ui-button:disabled,
@@ -225,7 +231,9 @@
     font-size: 0.875rem;
     line-height: 1.4;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
     width: 100%;
 }
 
@@ -281,7 +289,10 @@
     justify-content: center;
     width: 1.1rem;
     background-color: hsl(var(--background));
-    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .ui-checkbox:focus-visible,
@@ -330,7 +341,9 @@
     height: 1.5rem;
     padding: 0.125rem;
     position: relative;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
     width: 2.75rem;
 }
 
@@ -342,7 +355,9 @@
     left: 0.1rem;
     position: absolute;
     top: 0.1rem;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
     width: 1.1rem;
     box-shadow: var(--shadow-sm);
 }
@@ -388,7 +403,9 @@
     font-size: 0.875rem;
     font-weight: 500;
     padding: 0.4rem 0.9rem;
-    transition: color 0.2s ease, background-color 0.2s ease;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .ui-tabs-trigger[data-state="active"] {
@@ -527,7 +544,9 @@
     color: hsl(var(--foreground));
     font-size: 0.85rem;
     cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .ui-page-button:hover {
@@ -782,7 +801,9 @@
     border: 1px solid hsl(var(--border));
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
     cursor: pointer;
 }
 
@@ -834,7 +855,9 @@
     padding: 0.65rem 0.9rem;
     font-size: 0.875rem;
     color: hsl(var(--foreground));
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .ui-select-item:hover,
@@ -867,7 +890,9 @@
     box-shadow: var(--shadow-sm);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.1s ease, transform 0.1s ease;
+    transition:
+        opacity 0.1s ease,
+        transform 0.1s ease;
 }
 
 .ui-tooltip-bubble[data-state="visible"] {
@@ -1084,28 +1109,56 @@
 }
 
 @keyframes ui-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes ui-dialog-in {
-    from { opacity: 0; transform: scale(0.96); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes ui-sheet-slide-right {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes ui-sheet-slide-left {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes ui-toast-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .ui-separator {
@@ -1317,7 +1370,9 @@
     padding: 0.5rem 0.75rem;
     text-align: left;
     text-decoration: none;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
     width: 100%;
 }
 
@@ -1387,7 +1442,9 @@
     display: inline-flex;
     gap: 0.5rem;
     padding: 0.35rem 0.75rem;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .ui-sidebar-trigger:hover {
@@ -1404,7 +1461,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1.5rem;
+    /*padding: 1.5rem;*/
 }
 
 .ui-sidebar-rail {

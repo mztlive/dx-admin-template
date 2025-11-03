@@ -123,9 +123,7 @@ pub fn Navbar() -> Element {
                     class: "admin-shell-inset",
                     header {
                         class: "admin-shell-topbar",
-                        div { class: "admin-shell-meta",
-                            h1 { class: "admin-shell-title", "Admin Template" }
-                        }
+                        h1 { class: "admin-shell-title", "Admin Template" }
                         div { class: "admin-shell-actions",
                             Button {
                                 variant: ButtonVariant::Icon,
