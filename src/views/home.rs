@@ -445,14 +445,7 @@ fn UiShowcase() -> Element {
         section {
             class: if dark_mode() { "ui-shell shadcn dark" } else { "ui-shell shadcn" },
             "data-theme": if dark_mode() { "dark" } else { "light" },
-            div {
-                class: "ui-stack",
-                h2 { style: "font-size: 1.75rem; font-weight: 600;", "Shadcn primitives for Dioxus" }
-                p {
-                    style: "color: hsl(var(--muted-foreground)); max-width: 640px;",
-                    "A compact gallery of the shadcn/ui building blocks, rebuilt with Dioxus 0.7 signals."
-                }
-            }
+
             div {
                 class: "ui-demo-grid",
 
