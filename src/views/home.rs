@@ -1,18 +1,14 @@
-use crate::components::{
-    ui::{
-        Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertVariant, Avatar,
-        Badge, BadgeVariant, Breadcrumb, Button, ButtonSize, ButtonVariant, Card, CardContent,
-        CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, CommandItem, CommandPalette,
-        ContextItem, ContextMenu, Crumb, Dialog, DropdownMenu, DropdownMenuItem, HoverCard, Input,
-        Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu, Pagination,
-        Popover, Progress, RadioGroup, RadioGroupItem, Select, SelectOption, Separator,
-        SeparatorOrientation, Sheet, SheetSide, Sidebar, SidebarContent, SidebarFooter,
-        SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset,
-        SidebarLayout, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator,
-        SidebarTrigger, Slider, StepItem, Steps, Switch, Tabs, TabsContent, TabsList, TabsTrigger,
-        Textarea, Toast, ToastViewport, Tooltip,
-    },
-    Echo, Hero,
+use crate::components::ui::{
+    Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertVariant, Avatar,
+    Badge, BadgeVariant, Breadcrumb, Button, ButtonSize, ButtonVariant, Card, CardContent,
+    CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, CommandItem, CommandPalette,
+    ContextItem, ContextMenu, Crumb, Dialog, DropdownMenu, DropdownMenuItem, HoverCard, Input,
+    Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu, Pagination, Popover,
+    Progress, RadioGroup, RadioGroupItem, Select, SelectOption, Separator, SeparatorOrientation,
+    Sheet, SheetSide, Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
+    SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout, SidebarMenu, SidebarMenuButton,
+    SidebarMenuItem, SidebarSeparator, SidebarTrigger, Slider, StepItem, Steps, Switch, Tabs,
+    TabsContent, TabsList, TabsTrigger, Textarea, Toast, ToastViewport, Tooltip,
 };
 use dioxus::prelude::*;
 
@@ -20,12 +16,9 @@ use dioxus::prelude::*;
 #[component]
 pub fn Home() -> Element {
     rsx! {
-        Hero {}
-        Echo {}
         UiShowcase {}
     }
 }
-
 #[component]
 fn UiShowcase() -> Element {
     let accepted_terms = use_signal(|| false);
