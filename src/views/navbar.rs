@@ -133,16 +133,8 @@ pub fn Navbar() -> Element {
                     class: "admin-shell-inset",
                     header {
                         class: "admin-shell-topbar",
-                        div { class: "admin-shell-command",
-                            Button {
-                                variant: ButtonVariant::Ghost,
-                                class: Some("admin-command-button".to_string()),
-                                r#type: "button".to_string(),
-                                "⌘K"
-                            }
-                        }
                         div { class: "admin-shell-meta",
-                            h1 { class: "admin-shell-title", "{title}" }
+                            h1 { class: "admin-shell-title", "Admin Template" }
                         }
                         div { class: "admin-shell-actions",
                             Button {

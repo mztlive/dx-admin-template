@@ -1,7 +1,7 @@
 :root {
     --sidebar-width: 280px;
     --sidebar-collapsed-width: 72px;
-    --topbar-height: 60px;
+    --topbar-height: 40px;
 }
 
 .ui-shell {
@@ -10,7 +10,7 @@
     width: 100%;
     max-width: none;
     padding: 0;
-    background-color: hsl(var(--muted));
+    /*background-color: hsl(var(--muted));*/
     border-radius: 0;
 }
 
@@ -33,7 +33,9 @@
     background-color: hsl(var(--card));
     border-right: 1px solid hsl(var(--border));
     padding: 28px 24px;
-    transition: width 0.25s ease, padding 0.25s ease;
+    transition:
+        width 0.25s ease,
+        padding 0.25s ease;
 }
 
 .ui-sidebar[data-collapsed="true"] {
@@ -62,7 +64,11 @@
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    background: linear-gradient(
+        135deg,
+        hsl(var(--primary)),
+        hsl(var(--secondary))
+    );
     color: hsl(var(--primary-foreground));
     font-size: 18px;
 }
@@ -115,7 +121,10 @@
     border: 1px solid transparent;
     background-color: transparent;
     color: hsl(var(--foreground));
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
     text-align: left;
     text-decoration: none;
 }
@@ -203,8 +212,6 @@
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 16px;
-    padding: 0 24px;
-    border-bottom: 1px solid hsl(var(--border));
     background-color: hsla(var(--background), 0.95);
     backdrop-filter: blur(12px);
     height: var(--topbar-height);
@@ -253,8 +260,8 @@
 .admin-shell-content {
     flex: 1;
     width: 100%;
-    padding: 32px;
-    background-color: hsl(var(--muted));
+    padding: 20px;
+    /*background-color: hsl(var(--muted));*/
     min-height: calc(100vh - var(--topbar-height));
 }
 
