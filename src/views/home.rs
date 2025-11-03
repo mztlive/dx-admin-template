@@ -34,7 +34,8 @@ fn UiShowcase() -> Element {
 
     rsx! {
         section {
-            class: "ui-shell shadcn",
+            class: if dark_mode() { "ui-shell shadcn dark" } else { "ui-shell shadcn" },
+            "data-theme": if dark_mode() { "dark" } else { "light" },
             div {
                 class: "ui-stack",
                 h2 { style: "font-size: 1.75rem; font-weight: 600;", "Shadcn primitives for Dioxus" }
