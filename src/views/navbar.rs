@@ -111,17 +111,6 @@ pub fn Navbar() -> Element {
                         }
                     }
                     SidebarFooter {
-                        div { class: "sidebar-profile",
-                            Avatar {
-                                src: Some("https://avatars.githubusercontent.com/u/3236120?v=4".to_string()),
-                                alt: Some("Administrator avatar".to_string()),
-                                fallback: Some("DX".to_string()),
-                            }
-                            div {
-                                span { class: "sidebar-profile-name", "Taylor Chen" }
-                                span { class: "sidebar-profile-role", "Product Manager" }
-                            }
-                        }
                         Button {
                             class: Some("mt-2 w-full".to_string()),
                             variant: ButtonVariant::Secondary,
