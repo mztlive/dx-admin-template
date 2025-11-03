@@ -6,8 +6,11 @@ use crate::components::{
         ContextItem, ContextMenu, Crumb, Dialog, DropdownMenu, DropdownMenuItem, HoverCard, Input,
         Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu, Pagination,
         Popover, Progress, RadioGroup, RadioGroupItem, Select, SelectOption, Separator,
-        SeparatorOrientation, Sheet, SheetSide, Slider, StepItem, Steps, Switch, Tabs, TabsContent,
-        TabsList, TabsTrigger, Textarea, Toast, ToastViewport, Tooltip,
+        SeparatorOrientation, Sheet, SheetSide, Sidebar, SidebarContent, SidebarFooter,
+        SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset,
+        SidebarLayout, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator,
+        SidebarTrigger, Slider, StepItem, Steps, Switch, Tabs, TabsContent, TabsList, TabsTrigger,
+        Textarea, Toast, ToastViewport, Tooltip,
     },
     Echo, Hero,
 };
@@ -41,6 +44,8 @@ fn UiShowcase() -> Element {
     let dialog_open = use_signal(|| false);
     let sheet_open = use_signal(|| false);
     let toast_open = use_signal(|| false);
+    let sidebar_collapsed = use_signal(|| false);
+    let sidebar_active = use_signal(|| "analytics".to_string());
     let slider_value_signal = slider_value.clone();
     let slider_value_setter = slider_value.clone();
     let contact_method_signal = contact_method.clone();
@@ -60,6 +65,8 @@ fn UiShowcase() -> Element {
     let dialog_signal = dialog_open.clone();
     let sheet_signal = sheet_open.clone();
     let toast_signal = toast_open.clone();
+    let sidebar_collapsed_setter = sidebar_collapsed.clone();
+    let sidebar_active_setter = sidebar_active.clone();
     let intensity_text = move || format!("Accent intensity: {:.0}%", slider_value_signal());
     let contact_text = move || format!("Preferred contact: {}", contact_method_signal());
     let select_options = vec![
@@ -150,6 +157,34 @@ fn UiShowcase() -> Element {
             .unwrap_or_else(|| "System".to_string())
     };
     let theme_summary = format!("Active theme: {theme_display}");
+    let collapsed_state = sidebar_collapsed();
+    let current_sidebar_value = sidebar_active();
+    let is_analytics_active = current_sidebar_value.as_str() == "analytics";
+    let is_crm_active = current_sidebar_value.as_str() == "crm";
+    let is_billing_active = current_sidebar_value.as_str() == "billing";
+    let is_settings_active = current_sidebar_value.as_str() == "settings";
+    let (sidebar_title, sidebar_body) = match current_sidebar_value.as_str() {
+        "analytics" => (
+            "Analytics overview".to_string(),
+            "Monitor KPI trends, conversion funnels, and health metrics in real time.".to_string(),
+        ),
+        "crm" => (
+            "Customer relationship management".to_string(),
+            "Surface leads, segment accounts, and coordinate follow-ups in one place.".to_string(),
+        ),
+        "billing" => (
+            "Billing & usage".to_string(),
+            "Review invoices, adjust subscription tiers, and reconcile metered usage.".to_string(),
+        ),
+        "settings" => (
+            "Workspace settings".to_string(),
+            "Manage authentication, API tokens, and notification preferences.".to_string(),
+        ),
+        _ => (
+            "Select a section".to_string(),
+            "Pick a destination from the sidebar to preview the content area.".to_string(),
+        ),
+    };
 
     rsx! {
         section {
@@ -392,6 +427,114 @@ fn UiShowcase() -> Element {
                                 }
                             }
                             SpanHelper { "{steps_summary()}" }
+                        }
+                    }
+                }
+
+                Card {
+                    CardHeader {
+                        CardTitle { "Structural navigation" }
+                        CardDescription { "Collapsible sidebar layout with grouped menus." }
+                    }
+                    CardContent {
+                        SidebarLayout {
+                            Sidebar {
+                                collapsed: collapsed_state,
+                                SidebarHeader {
+                                    div { class: "ui-sidebar-button-body",
+                                        span { class: "ui-sidebar-icon", "⚡" }
+                                        span { class: "ui-sidebar-text",
+                                            span { class: "ui-sidebar-label", "Acme HQ" }
+                                            span { class: "ui-sidebar-description", "Operations console" }
+                                        }
+                                    }
+                                }
+                                SidebarContent {
+                                    SidebarGroup {
+                                        SidebarGroupLabel { "Workspace" }
+                                        SidebarGroupContent {
+                                            SidebarMenu {
+                                                SidebarMenuItem {
+                                                SidebarMenuButton {
+                                                        label: "Analytics",
+                                                        description: Some("Track KPIs and trends".into()),
+                                                        icon: Some("📊".into()),
+                                                        active: is_analytics_active,
+                                                        on_click: move |_| {
+                                                            let mut signal = sidebar_active_setter.clone();
+                                                            signal.set("analytics".to_string());
+                                                        },
+                                                    }
+                                                }
+                                                SidebarMenuItem {
+                                                SidebarMenuButton {
+                                                        label: "CRM",
+                                                        description: Some("Manage customer pipeline".into()),
+                                                        icon: Some("👥".into()),
+                                                        active: is_crm_active,
+                                                        on_click: move |_| {
+                                                            let mut signal = sidebar_active_setter.clone();
+                                                            signal.set("crm".to_string());
+                                                        },
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    SidebarSeparator {}
+                                    SidebarGroup {
+                                        SidebarGroupLabel { "Reporting" }
+                                        SidebarGroupContent {
+                                            SidebarMenu {
+                                                SidebarMenuItem {
+                                                SidebarMenuButton {
+                                                        label: "Billing",
+                                                        description: Some("Invoices, usage, balances".into()),
+                                                        icon: Some("💳".into()),
+                                                        badge: Some("8".into()),
+                                                        active: is_billing_active,
+                                                        on_click: move |_| {
+                                                            let mut signal = sidebar_active_setter.clone();
+                                                            signal.set("billing".to_string());
+                                                        },
+                                                    }
+                                                }
+                                                SidebarMenuItem {
+                                                SidebarMenuButton {
+                                                        label: "Settings",
+                                                        description: Some("Themes, tokens, notifications".into()),
+                                                        icon: Some("⚙️".into()),
+                                                        active: is_settings_active,
+                                                        on_click: move |_| {
+                                                            let mut signal = sidebar_active_setter.clone();
+                                                            signal.set("settings".to_string());
+                                                        },
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                SidebarFooter {
+                                    SidebarTrigger {
+                                        collapsed: collapsed_state,
+                                        label: Some("Toggle sidebar".to_string()),
+                                        on_toggle: move |next| {
+                                            let mut signal = sidebar_collapsed_setter.clone();
+                                            signal.set(next);
+                                        },
+                                    }
+                                }
+                            }
+                            SidebarInset {
+                                class: "ui-stack",
+                                h3 { style: "font-size: 1.2rem; font-weight: 600;", "{sidebar_title}" }
+                                p {
+                                    style: "color: hsl(var(--muted-foreground)); max-width: 460px;",
+                                    "{sidebar_body}"
+                                }
+                                SpanHelper { "Use the sidebar to swap the focused surface." }
+                            }
                         }
                     }
                 }
