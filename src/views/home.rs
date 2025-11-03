@@ -1,11 +1,13 @@
 use crate::components::{
     ui::{
         Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertVariant, Avatar,
-        Badge, BadgeVariant, Button, ButtonSize, ButtonVariant, Card, CardContent, CardDescription,
-        CardFooter, CardHeader, CardTitle, Checkbox, DropdownMenu, DropdownMenuItem, Input, Label,
-        Progress, RadioGroup, RadioGroupItem, Select, SelectOption, Separator,
-        SeparatorOrientation, Slider, Switch, Tabs, TabsContent, TabsList, TabsTrigger, Textarea,
-        Tooltip,
+        Badge, BadgeVariant, Breadcrumb, Button, ButtonSize, ButtonVariant, Card, CardContent,
+        CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, CommandItem, CommandPalette,
+        ContextItem, ContextMenu, Crumb, Dialog, DropdownMenu, DropdownMenuItem, HoverCard, Input,
+        Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu, Pagination,
+        Popover, Progress, RadioGroup, RadioGroupItem, Select, SelectOption, Separator,
+        SeparatorOrientation, Sheet, SheetSide, Slider, StepItem, Steps, Switch, Tabs, TabsContent,
+        TabsList, TabsTrigger, Textarea, Toast, ToastViewport, Tooltip,
     },
     Echo, Hero,
 };
@@ -31,6 +33,14 @@ fn UiShowcase() -> Element {
     let dark_mode = use_signal(|| false);
     let theme_choice = use_signal(|| Some("system".to_string()));
     let menu_selection = use_signal(|| "Select a menu action".to_string());
+    let menubar_selection = use_signal(|| "Choose a menu item".to_string());
+    let pagination_current = use_signal(|| 3usize);
+    let steps_current = use_signal(|| 2usize);
+    let command_selection = use_signal(|| "Nothing selected yet".to_string());
+    let context_selection = use_signal(|| "Right click the area to choose an action".to_string());
+    let dialog_open = use_signal(|| false);
+    let sheet_open = use_signal(|| false);
+    let toast_open = use_signal(|| false);
     let slider_value_signal = slider_value.clone();
     let slider_value_setter = slider_value.clone();
     let contact_method_signal = contact_method.clone();
@@ -42,6 +52,14 @@ fn UiShowcase() -> Element {
     let dark_mode_setter = dark_mode.clone();
     let theme_choice_setter = theme_choice.clone();
     let menu_selection_setter = menu_selection.clone();
+    let menubar_selection_setter = menubar_selection.clone();
+    let pagination_setter = pagination_current.clone();
+    let steps_setter = steps_current.clone();
+    let command_selection_setter = command_selection.clone();
+    let context_selection_setter = context_selection.clone();
+    let dialog_signal = dialog_open.clone();
+    let sheet_signal = sheet_open.clone();
+    let toast_signal = toast_open.clone();
     let intensity_text = move || format!("Accent intensity: {:.0}%", slider_value_signal());
     let contact_text = move || format!("Preferred contact: {}", contact_method_signal());
     let select_options = vec![
@@ -55,6 +73,70 @@ fn UiShowcase() -> Element {
         DropdownMenuItem::new("Team", "team"),
         DropdownMenuItem::new("Sign out", "logout").destructive(),
     ];
+    let breadcrumb_items = vec![
+        Crumb::new("Dashboard", Some("#")),
+        Crumb::new("Settings", Some("#settings")),
+        Crumb::new("Team", None::<String>),
+    ];
+    let navigation_items = vec![
+        NavigationItem::new(
+            "Overview",
+            "#overview",
+            Some("Project snapshots and quick metrics"),
+        ),
+        NavigationItem::new(
+            "Playground",
+            "#playground",
+            Some("Prototype new ideas and components"),
+        ),
+        NavigationItem::new(
+            "Documentation",
+            "https://dioxuslabs.com/learn",
+            Some("Dive into the latest Dioxus 0.7 docs"),
+        ),
+    ];
+    let menubar_menus = vec![
+        MenubarMenu::new(
+            "File",
+            vec![
+                MenubarItem::new("New Tab", "new_tab").shortcut("⌘T"),
+                MenubarItem::new("Open Workspace", "open_workspace"),
+                MenubarItem::new("Save", "save").shortcut("⌘S"),
+            ],
+        ),
+        MenubarMenu::new(
+            "Edit",
+            vec![
+                MenubarItem::new("Undo", "undo").shortcut("⌘Z"),
+                MenubarItem::new("Redo", "redo").shortcut("⇧⌘Z"),
+                MenubarItem::new("Delete", "delete").destructive(),
+            ],
+        ),
+    ];
+    let command_items = vec![
+        CommandItem::new("Create project", "create_project")
+            .shortcut("⌘N")
+            .group("Actions"),
+        CommandItem::new("Invite teammate", "invite").group("Actions"),
+        CommandItem::new("Open documentation", "docs").group("Resources"),
+        CommandItem::new("Keyboard shortcuts", "shortcuts").group("Resources"),
+    ];
+    let context_items = vec![
+        ContextItem::new("Rename", "rename"),
+        ContextItem::new("Duplicate", "duplicate"),
+        ContextItem::new("Archive", "archive"),
+        ContextItem::new("Delete", "delete").destructive(),
+    ];
+    let steps_items = vec![
+        StepItem::new("Plan", Some("Outline requirements")),
+        StepItem::new("Build", Some("Implement features")),
+        StepItem::new("Review", Some("QA and ship")),
+    ];
+    let total_pages = 8usize;
+    let pagination_summary =
+        move || format!("Showing page {} of {total_pages}", pagination_current());
+    let steps_total = steps_items.len();
+    let steps_summary = move || format!("Stage {} of {steps_total}", steps_current());
     let theme_display = {
         let current = theme_choice();
         current
@@ -202,7 +284,7 @@ fn UiShowcase() -> Element {
 
                 Card {
                     CardHeader {
-                        CardTitle { "Select & menus" }
+                        CardTitle { "Select & dropdowns" }
                         CardDescription { "Select, dropdown menu, tooltip and dynamic feedback." }
                     }
                     CardContent {
@@ -241,6 +323,75 @@ fn UiShowcase() -> Element {
                                     "Hover me"
                                 }
                             }
+                        }
+                    }
+                }
+
+                Card {
+                    CardHeader {
+                        CardTitle { "Navigation patterns" }
+                        CardDescription { "Breadcrumbs, menus, pagination, and progress steps." }
+                    }
+                    CardContent {
+                        div { class: "ui-stack",
+                            SpanHelper { "Breadcrumb" }
+                            Breadcrumb { items: breadcrumb_items.clone(), separator: ">".to_string() }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Navigation menu" }
+                            NavigationMenu { items: navigation_items.clone() }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Menubar" }
+                            Menubar {
+                                menus: menubar_menus.clone(),
+                                on_select: move |value| {
+                                    let mut signal = menubar_selection_setter.clone();
+                                    signal.set(format!("Menubar selected: {value}"));
+                                },
+                            }
+                            SpanHelper { "{menubar_selection()}" }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Pagination" }
+                            Pagination {
+                                total_pages: total_pages,
+                                current_page: pagination_current(),
+                                on_page_change: move |page| {
+                                    let mut signal = pagination_setter.clone();
+                                    signal.set(page);
+                                },
+                            }
+                            SpanHelper { "{pagination_summary()}" }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Steps" }
+                            Steps {
+                                steps: steps_items.clone(),
+                                current: steps_current(),
+                            }
+                            div { class: "ui-cluster",
+                                Button {
+                                    variant: ButtonVariant::Outline,
+                                    size: ButtonSize::Sm,
+                                    on_click: move |_| {
+                                        let mut signal = steps_setter.clone();
+                                        let prev = signal().saturating_sub(1).max(1);
+                                        signal.set(prev);
+                                    },
+                                    "Previous"
+                                }
+                                Button {
+                                    size: ButtonSize::Sm,
+                                    on_click: move |_| {
+                                        let mut signal = steps_setter.clone();
+                                        let next = (signal() + 1).min(steps_total);
+                                        signal.set(next);
+                                    },
+                                    "Next"
+                                }
+                            }
+                            SpanHelper { "{steps_summary()}" }
                         }
                     }
                 }
@@ -294,6 +445,41 @@ fn UiShowcase() -> Element {
 
                 Card {
                     CardHeader {
+                        CardTitle { "Command & context" }
+                        CardDescription { "Command palette filtering and contextual menus." }
+                    }
+                    CardContent {
+                        div { class: "ui-stack",
+                            SpanHelper { "Command palette" }
+                            CommandPalette {
+                                items: command_items.clone(),
+                                on_select: move |value| {
+                                    let mut signal = command_selection_setter.clone();
+                                    signal.set(format!("Command selected: {value}"));
+                                },
+                            }
+                            SpanHelper { "{command_selection()}" }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Context menu" }
+                            ContextMenu {
+                                items: context_items.clone(),
+                                on_select: move |value| {
+                                    let mut signal = context_selection_setter.clone();
+                                    signal.set(format!("Context action: {value}"));
+                                },
+                                div {
+                                    style: "padding: 1.5rem; border: 1px dashed hsl(var(--border)); border-radius: var(--radius); text-align: center;",
+                                    "Right click anywhere in this box"
+                                }
+                            }
+                            SpanHelper { "{context_selection()}" }
+                        }
+                    }
+                }
+
+                Card {
+                    CardHeader {
                         CardTitle { "Tabs & panels" }
                         CardDescription { "Tabbed navigation with content surfaces that stay in sync." }
                     }
@@ -326,6 +512,56 @@ fn UiShowcase() -> Element {
                                     SpanHelper { "Generate PDF, CSV, or scheduled exports directly from here." }
                                     Button { variant: ButtonVariant::Secondary, "Create report" }
                                 }
+                            }
+                        }
+                    }
+                }
+
+                Card {
+                    CardHeader {
+                        CardTitle { "Dialogs & overlays" }
+                        CardDescription { "Popover, hover card, dialogs, sheet, and toast examples." }
+                    }
+                    CardContent {
+                        div { class: "ui-cluster",
+                            Button {
+                                variant: ButtonVariant::Secondary,
+                                on_click: move |_| {
+                                    let mut signal = dialog_signal.clone();
+                                    signal.set(true);
+                                },
+                                "Open dialog"
+                            }
+                            Button {
+                                variant: ButtonVariant::Outline,
+                                on_click: move |_| {
+                                    let mut signal = sheet_signal.clone();
+                                    signal.set(true);
+                                },
+                                "Open sheet"
+                            }
+                            Button {
+                                variant: ButtonVariant::Ghost,
+                                on_click: move |_| {
+                                    let mut signal = toast_signal.clone();
+                                    signal.set(true);
+                                },
+                                "Notify me"
+                            }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Popover" }
+                            Popover {
+                                placement: "bottom".to_string(),
+                                trigger: rsx! { Button { variant: ButtonVariant::Outline, size: ButtonSize::Sm, "Toggle popover" } },
+                                content: rsx! { SpanHelper { "Choose the dialog or sheet you want to configure." } },
+                            }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Hover card" }
+                            HoverCard {
+                                trigger: rsx! { Badge { variant: BadgeVariant::Secondary, "Hover me" } },
+                                content: rsx! { span { style: "font-size: 0.8rem; color: hsl(var(--muted-foreground));", "Preview contextual information instantly." } },
                             }
                         }
                     }
@@ -382,6 +618,42 @@ fn UiShowcase() -> Element {
                             }
                         }
                     }
+                }
+            }
+            Dialog {
+                open: dialog_signal.clone(),
+                title: Some("Create project".to_string()),
+                description: Some("Configure the new analytics workspace.".to_string()),
+                div { class: "ui-stack",
+                    Label { html_for: "dialog-name", "Project name" }
+                    Input { id: "dialog-name", placeholder: "Analytics redesign" }
+                }
+            }
+            Sheet {
+                open: sheet_signal.clone(),
+                side: SheetSide::Right,
+                title: Some("Activity log".to_string()),
+                description: Some("Review the latest changes from your teammates.".to_string()),
+                div {
+                    class: "ui-stack",
+                    SpanHelper { "Today" }
+                    ul {
+                        style: "display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;",
+                        li { "Maria added new metrics to the dashboard." }
+                        li { "Evan approved the Q2 launch plan." }
+                        li { "Ada commented on revenue projections." }
+                    }
+                }
+            }
+            ToastViewport {
+                Toast {
+                    open: toast_open(),
+                    title: Some("Changes saved".to_string()),
+                    description: Some("We synced your workspace preferences.".to_string()),
+                    on_close: move |_| {
+                        let mut signal = toast_signal.clone();
+                        signal.set(false);
+                    },
                 }
             }
         }

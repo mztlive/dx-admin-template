@@ -462,6 +462,245 @@
     gap: 1rem;
 }
 
+.ui-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.ui-breadcrumb a {
+    color: hsl(var(--foreground));
+    text-decoration: none;
+}
+
+.ui-breadcrumb a:hover {
+    color: hsl(var(--primary));
+}
+
+.ui-breadcrumb-separator {
+    opacity: 0.6;
+}
+
+.ui-pagination {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ui-page-button {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.5rem;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.ui-page-button:hover {
+    background-color: hsl(var(--muted));
+}
+
+.ui-page-button[data-active="true"] {
+    border-color: hsl(var(--primary));
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}
+
+.ui-page-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ui-steps {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ui-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.ui-step-indicator {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 2px solid hsl(var(--border));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(var(--background));
+    font-weight: 600;
+}
+
+.ui-step[data-state="active"] .ui-step-indicator {
+    border-color: hsl(var(--primary));
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}
+
+.ui-step[data-state="complete"] .ui-step-indicator {
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+}
+
+.ui-navmenu,
+.ui-menubar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem;
+    border-radius: calc(var(--radius) - 2px);
+    background-color: hsl(var(--muted));
+    position: relative;
+}
+
+.ui-navmenu-trigger,
+.ui-menubar-trigger {
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 0.45rem 0.75rem;
+    border-radius: calc(var(--radius) - 4px);
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+}
+
+.ui-navmenu-trigger[data-open="true"],
+.ui-menubar-trigger[data-open="true"] {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    box-shadow: var(--shadow-sm);
+}
+
+.ui-navmenu-content,
+.ui-menubar-content {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    min-width: 12rem;
+    background-color: hsl(var(--popover));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    box-shadow: var(--shadow-md);
+    padding: 0.5rem 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    z-index: 35;
+}
+
+.ui-navmenu-item,
+.ui-menubar-item {
+    padding: 0.4rem 0.6rem;
+    border-radius: calc(var(--radius) - 4px);
+    font-size: 0.85rem;
+    color: hsl(var(--foreground));
+    cursor: pointer;
+}
+
+.ui-navmenu-item:hover,
+.ui-menubar-item:hover {
+    background-color: hsl(var(--muted));
+}
+
+.ui-command {
+    width: 100%;
+    max-width: 420px;
+    background-color: hsl(var(--popover));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 2px);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.ui-command-header {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid hsl(var(--border));
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.ui-command-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: hsl(var(--foreground));
+    outline: none;
+}
+
+.ui-command-list {
+    max-height: 14rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ui-command-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: hsl(var(--foreground));
+}
+
+.ui-command-item:hover,
+.ui-command-item[data-state="active"] {
+    background-color: hsl(var(--muted));
+}
+
+.ui-context-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ui-context-menu {
+    position: fixed;
+    min-width: 220px;
+    background-color: hsl(var(--popover));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    box-shadow: var(--shadow-md);
+    padding: 0.3rem 0.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    z-index: 40;
+}
+
+.ui-context-item {
+    padding: 0.45rem 0.75rem;
+    border-radius: calc(var(--radius) - 4px);
+    font-size: 0.85rem;
+    color: hsl(var(--foreground));
+    cursor: pointer;
+}
+
+.ui-context-item[data-variant="destructive"] {
+    color: hsl(var(--destructive));
+}
+
+.ui-context-item:hover {
+    background-color: hsl(var(--muted));
+}
+
 .ui-alert {
     border-radius: calc(var(--radius) + 2px);
     border: 1px solid hsl(var(--border));
@@ -682,6 +921,129 @@
     justify-content: center;
     font-size: 1rem;
     letter-spacing: 0.03em;
+}
+
+.ui-overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: hsl(var(--foreground) / 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    z-index: 48;
+}
+
+.ui-dialog {
+    background-color: hsl(var(--popover));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 4px);
+    padding: 1.5rem;
+    width: min(480px, 92vw);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: hsl(var(--popover-foreground));
+}
+
+.ui-dialog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.ui-dialog-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.ui-dialog-description {
+    font-size: 0.9rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.ui-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.ui-popover,
+.ui-hovercard {
+    position: absolute;
+    min-width: 220px;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--popover));
+    box-shadow: var(--shadow-md);
+    padding: 0.75rem;
+    z-index: 45;
+}
+
+.ui-popover[data-placement="top"] {
+    transform: translate(-50%, -0.75rem);
+}
+
+.ui-popover[data-placement="bottom"] {
+    transform: translate(-50%, 0.75rem);
+}
+
+.ui-hovercard {
+    transform: translate(-50%, -0.75rem);
+}
+
+.ui-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: hsl(var(--foreground) / 0.45);
+    z-index: 49;
+}
+
+.ui-sheet {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: min(360px, 85vw);
+    background-color: hsl(var(--popover));
+    border-left: 1px solid hsl(var(--border));
+    box-shadow: -16px 0 40px -28px rgb(15 23 42 / 0.65);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 50;
+}
+
+.ui-sheet[data-side="left"] {
+    left: 0;
+    border-left: none;
+    border-right: 1px solid hsl(var(--border));
+    box-shadow: 16px 0 40px -28px rgb(15 23 42 / 0.65);
+}
+
+.ui-sheet[data-side="right"] {
+    right: 0;
+}
+
+.ui-toast-container {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 60;
+}
+
+.ui-toast {
+    background-color: hsl(var(--popover));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 2px);
+    padding: 0.85rem 1.1rem;
+    box-shadow: var(--shadow-md);
+    min-width: 240px;
+    color: hsl(var(--popover-foreground));
 }
 
 .ui-separator {
