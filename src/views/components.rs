@@ -185,6 +185,10 @@ fn UiShowcase() -> Element {
             "Pick a destination from the sidebar to preview the content area.".to_string(),
         ),
     };
+    let scroll_container_style = "width: 100%; overflow-x: auto; padding-bottom: 2.5rem;";
+    let showcase_grid_style = "display: grid; grid-template-columns: repeat(2, minmax(520px, 1fr)); gap: 2.5rem; align-items: start; min-width: 1100px;";
+    let full_width_style = "grid-column: 1 / -1; min-width: 520px;";
+    let single_column_style = "min-width: 520px;";
 
     rsx! {
         section {
@@ -192,565 +196,600 @@ fn UiShowcase() -> Element {
             "data-theme": if dark_mode() { "dark" } else { "light" },
 
             div {
-                class: "ui-demo-grid",
+                class: "ui-showcase-scroll",
+                style: scroll_container_style,
+                div {
+                    class: "ui-showcase-grid",
+                    style: showcase_grid_style,
 
-                Card {
-                    CardHeader {
-                        CardTitle { "Profile form" }
-                        CardDescription { "Inputs, sliders, helpers, and actions inside a card layout." }
-                    }
-                    CardContent {
-                        div { class: "ui-stack",
-                            Label { html_for: "profile-name", "Name" }
-                            Input { id: "profile-name", placeholder: "Ada Lovelace" }
-                        }
-                        div { class: "ui-stack",
-                            Label { html_for: "profile-about", "About" }
-                            Textarea {
-                                id: "profile-about",
-                                placeholder: "Tell us something fun...",
-                                rows: 4,
+                    div {
+                        style: full_width_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Profile form" }
+                                CardDescription { "Inputs, sliders, helpers, and actions inside a card layout." }
                             }
-                            SpanHelper { "Textarea adopts shadcn spacing and typography out of the box." }
-                        }
-                        Separator { style: "margin: 1rem 0;" }
-                        div { class: "ui-stack",
-                            Label { html_for: "accent-slider", "Accent strength" }
-                            Slider {
-                                value: slider_value(),
-                                min: 0.0,
-                                max: 100.0,
-                                step: 1.0,
-                                on_value_change: {
-                                    let mut signal = slider_value_setter.clone();
-                                    move |val| signal.set(val)
-                                },
-                            }
-                            Progress { value: slider_value(), max: 100.0 }
-                            SpanHelper { "{intensity_text()}" }
-                        }
-                        div { class: "ui-stack",
-                            Label { html_for: "theme-select", "Theme preference" }
-                            Select {
-                                id: Some("theme-select".to_string()),
-                                placeholder: "Select a theme",
-                                options: select_options.clone(),
-                                selected: theme_choice_signal(),
-                                on_change: move |value| {
-                                    let mut signal = theme_choice_setter.clone();
-                                    signal.set(Some(value));
-                                },
-                            }
-                            SpanHelper { "{theme_summary}" }
-                        }
-                        div { class: "ui-bleed",
-                                div { class: "ui-cluster",
-                                    Checkbox {
-                                        id: Some("accept-terms".to_string()),
-                                        checked: accepted_terms(),
-                                        on_checked_change: move |state| accepted_terms_setter.clone().set(state),
+                            CardContent {
+                                div { class: "ui-stack",
+                                    Label { html_for: "profile-name", "Name" }
+                                    Input { id: "profile-name", placeholder: "Ada Lovelace" }
+                                }
+                                div { class: "ui-stack",
+                                    Label { html_for: "profile-about", "About" }
+                                    Textarea {
+                                        id: "profile-about",
+                                        placeholder: "Tell us something fun...",
+                                        rows: 4,
                                     }
-                                    Label { html_for: "accept-terms", "Agree to terms" }
+                                    SpanHelper { "Textarea adopts shadcn spacing and typography out of the box." }
                                 }
-                                div { class: "ui-cluster",
-                                    Label { html_for: "profile-emails", "Email notifications" }
-                                    Switch {
-                                        id: Some("profile-emails".to_string()),
-                                        checked: email_notifications(),
-                                        on_checked_change: move |state| email_notifications_setter.clone().set(state),
+                                Separator { style: "margin: 1rem 0;" }
+                                div { class: "ui-stack",
+                                    Label { html_for: "accent-slider", "Accent strength" }
+                                    Slider {
+                                        value: slider_value(),
+                                        min: 0.0,
+                                        max: 100.0,
+                                        step: 1.0,
+                                        on_value_change: {
+                                            let mut signal = slider_value_setter.clone();
+                                            move |val| signal.set(val)
+                                        },
                                     }
+                                    Progress { value: slider_value(), max: 100.0 }
+                                    SpanHelper { "{intensity_text()}" }
                                 }
-                            }
-                    }
-                    CardFooter {
-                        div { class: "ui-cluster",
-                            Button { variant: ButtonVariant::Outline, size: ButtonSize::Sm, "Cancel" }
-                            Button { disabled: !accepted_terms(), "Save changes" }
-                        }
-                    }
-                }
-
-                Card {
-                    CardHeader {
-                        CardTitle { "Buttons & badges" }
-                        CardDescription { "Variant + size matrix copied directly from shadcn/ui." }
-                    }
-                    CardContent {
-                        div { class: "ui-stack",
-                            SpanHelper { "Buttons – variants" }
-                            div { class: "ui-cluster",
-                                Button { "Primary" }
-                                Button { variant: ButtonVariant::Secondary, "Secondary" }
-                                Button { variant: ButtonVariant::Destructive, "Destructive" }
-                                Button { variant: ButtonVariant::Outline, "Outline" }
-                                Button { variant: ButtonVariant::Ghost, "Ghost" }
-                                Button { variant: ButtonVariant::Link, "Learn more" }
-                            }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Buttons – sizes" }
-                            div { class: "ui-cluster",
-                                Button { size: ButtonSize::Sm, "Small" }
-                                Button { "Default" }
-                                Button { size: ButtonSize::Lg, "Large" }
-                                Button { size: ButtonSize::Icon, "★" }
-                            }
-                        }
-                        Separator { style: "margin: 1rem 0;" }
-                        div { class: "ui-stack",
-                            SpanHelper { "Badges" }
-                            div { class: "ui-cluster",
-                                Badge { "Default" }
-                                Badge { variant: BadgeVariant::Secondary, "Secondary" }
-                                Badge { variant: BadgeVariant::Destructive, "Destructive" }
-                                Separator { orientation: SeparatorOrientation::Vertical, style: "height: 1.5rem;" }
-                                Badge { variant: BadgeVariant::Outline, "Outline" }
-                            }
-                        }
-                    }
-                }
-
-                Card {
-                    CardHeader {
-                        CardTitle { "Select & dropdowns" }
-                        CardDescription { "Select, dropdown menu, tooltip and dynamic feedback." }
-                    }
-                    CardContent {
-                        div { class: "ui-stack",
-                            Label { html_for: "quick-theme", "Quick theme" }
-                            Select {
-                                id: Some("quick-theme".to_string()),
-                                placeholder: "Choose theme",
-                                options: select_options.clone(),
-                                selected: theme_choice_signal(),
-                                on_change: move |value| {
-                                    let mut signal = theme_choice_setter.clone();
-                                    signal.set(Some(value));
-                                },
-                            }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Dropdown menu" }
-                            DropdownMenu {
-                                label: "Open menu",
-                                items: menu_items.clone(),
-                                on_select: move |value| {
-                                    let mut signal = menu_selection_setter.clone();
-                                    signal.set(format!("Selected action: {value}"));
-                                },
-                            }
-                            SpanHelper { "{menu_selection()}" }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Tooltip" }
-                            Tooltip {
-                                label: "Invite collaborators",
-                                Button {
-                                    variant: ButtonVariant::Ghost,
-                                    size: ButtonSize::Sm,
-                                    "Hover me"
+                                div { class: "ui-stack",
+                                    Label { html_for: "theme-select", "Theme preference" }
+                                    Select {
+                                        id: Some("theme-select".to_string()),
+                                        placeholder: "Select a theme",
+                                        options: select_options.clone(),
+                                        selected: theme_choice_signal(),
+                                        on_change: move |value| {
+                                            let mut signal = theme_choice_setter.clone();
+                                            signal.set(Some(value));
+                                        },
+                                    }
+                                    SpanHelper { "{theme_summary}" }
                                 }
-                            }
-                        }
-                    }
-                }
-
-                Card {
-                    CardHeader {
-                        CardTitle { "Navigation patterns" }
-                        CardDescription { "Breadcrumbs, menus, pagination, and progress steps." }
-                    }
-                    CardContent {
-                        div { class: "ui-stack",
-                            SpanHelper { "Breadcrumb" }
-                            Breadcrumb { items: breadcrumb_items.clone(), separator: ">".to_string() }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Navigation menu" }
-                            NavigationMenu { items: navigation_items.clone() }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Menubar" }
-                            Menubar {
-                                menus: menubar_menus.clone(),
-                                on_select: move |value| {
-                                    let mut signal = menubar_selection_setter.clone();
-                                    signal.set(format!("Menubar selected: {value}"));
-                                },
-                            }
-                            SpanHelper { "{menubar_selection()}" }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Pagination" }
-                            Pagination {
-                                total_pages: total_pages,
-                                current_page: pagination_current(),
-                                on_page_change: move |page| {
-                                    let mut signal = pagination_setter.clone();
-                                    signal.set(page);
-                                },
-                            }
-                            SpanHelper { "{pagination_summary()}" }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Steps" }
-                            Steps {
-                                steps: steps_items.clone(),
-                                current: steps_current(),
-                            }
-                            div { class: "ui-cluster",
-                                Button {
-                                    variant: ButtonVariant::Outline,
-                                    size: ButtonSize::Sm,
-                                    on_click: move |_| {
-                                        let mut signal = steps_setter.clone();
-                                        let prev = signal().saturating_sub(1).max(1);
-                                        signal.set(prev);
-                                    },
-                                    "Previous"
-                                }
-                                Button {
-                                    size: ButtonSize::Sm,
-                                    on_click: move |_| {
-                                        let mut signal = steps_setter.clone();
-                                        let next = (signal() + 1).min(steps_total);
-                                        signal.set(next);
-                                    },
-                                    "Next"
-                                }
-                            }
-                            SpanHelper { "{steps_summary()}" }
-                        }
-                    }
-                }
-
-                Card {
-                    CardHeader {
-                        CardTitle { "Structural navigation" }
-                        CardDescription { "Collapsible sidebar layout with grouped menus." }
-                    }
-                    CardContent {
-                        SidebarLayout {
-                            Sidebar {
-                                collapsed: collapsed_state,
-                                SidebarHeader {
-                                    div { class: "ui-sidebar-button-body",
-                                        span { class: "ui-sidebar-icon", "⚡" }
-                                        span { class: "ui-sidebar-text",
-                                            span { class: "ui-sidebar-label", "Acme HQ" }
-                                            span { class: "ui-sidebar-description", "Operations console" }
+                                div { class: "ui-bleed",
+                                        div { class: "ui-cluster",
+                                            Checkbox {
+                                                id: Some("accept-terms".to_string()),
+                                                checked: accepted_terms(),
+                                                on_checked_change: move |state| accepted_terms_setter.clone().set(state),
+                                            }
+                                            Label { html_for: "accept-terms", "Agree to terms" }
                                         }
-                                    }
-                                }
-                                SidebarContent {
-                                    SidebarGroup {
-                                        SidebarGroupLabel { "Workspace" }
-                                        SidebarGroupContent {
-                                            SidebarMenu {
-                                                SidebarMenuItem {
-                                                SidebarMenuButton {
-                                                        label: "Analytics",
-                                                        description: Some("Track KPIs and trends".into()),
-                                                        icon: Some("📊".into()),
-                                                        active: is_analytics_active,
-                                                        on_click: move |_| {
-                                                            let mut signal = sidebar_active_setter.clone();
-                                                            signal.set("analytics".to_string());
-                                                        },
-                                                    }
-                                                }
-                                                SidebarMenuItem {
-                                                SidebarMenuButton {
-                                                        label: "CRM",
-                                                        description: Some("Manage customer pipeline".into()),
-                                                        icon: Some("👥".into()),
-                                                        active: is_crm_active,
-                                                        on_click: move |_| {
-                                                            let mut signal = sidebar_active_setter.clone();
-                                                            signal.set("crm".to_string());
-                                                        },
-                                                    }
-                                                }
+                                        div { class: "ui-cluster",
+                                            Label { html_for: "profile-emails", "Email notifications" }
+                                            Switch {
+                                                id: Some("profile-emails".to_string()),
+                                                checked: email_notifications(),
+                                                on_checked_change: move |state| email_notifications_setter.clone().set(state),
                                             }
                                         }
                                     }
-                                    SidebarSeparator {}
-                                    SidebarGroup {
-                                        SidebarGroupLabel { "Reporting" }
-                                        SidebarGroupContent {
-                                            SidebarMenu {
-                                                SidebarMenuItem {
-                                                SidebarMenuButton {
-                                                        label: "Billing",
-                                                        description: Some("Invoices, usage, balances".into()),
-                                                        icon: Some("💳".into()),
-                                                        badge: Some("8".into()),
-                                                        active: is_billing_active,
-                                                        on_click: move |_| {
-                                                            let mut signal = sidebar_active_setter.clone();
-                                                            signal.set("billing".to_string());
-                                                        },
-                                                    }
-                                                }
-                                                SidebarMenuItem {
-                                                SidebarMenuButton {
-                                                        label: "Settings",
-                                                        description: Some("Themes, tokens, notifications".into()),
-                                                        icon: Some("⚙️".into()),
-                                                        active: is_settings_active,
-                                                        on_click: move |_| {
-                                                            let mut signal = sidebar_active_setter.clone();
-                                                            signal.set("settings".to_string());
-                                                        },
-                                                    }
-                                                }
-                                            }
-                                        }
+                            }
+                            CardFooter {
+                                div { class: "ui-cluster",
+                                    Button { variant: ButtonVariant::Outline, size: ButtonSize::Sm, "Cancel" }
+                                    Button { disabled: !accepted_terms(), "Save changes" }
+                                }
+                            }
+                        }
+                    }
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Buttons & badges" }
+                                CardDescription { "Variant + size matrix copied directly from shadcn/ui." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    SpanHelper { "Buttons – variants" }
+                                    div { class: "ui-cluster",
+                                        Button { "Primary" }
+                                        Button { variant: ButtonVariant::Secondary, "Secondary" }
+                                        Button { variant: ButtonVariant::Destructive, "Destructive" }
+                                        Button { variant: ButtonVariant::Outline, "Outline" }
+                                        Button { variant: ButtonVariant::Ghost, "Ghost" }
+                                        Button { variant: ButtonVariant::Link, "Learn more" }
                                     }
                                 }
-                                SidebarFooter {
-                                    SidebarTrigger {
-                                        collapsed: collapsed_state,
-                                        label: Some("Toggle sidebar".to_string()),
-                                        on_toggle: move |next| {
-                                            let mut signal = sidebar_collapsed_setter.clone();
-                                            signal.set(next);
+                                div { class: "ui-stack",
+                                    SpanHelper { "Buttons – sizes" }
+                                    div { class: "ui-cluster",
+                                        Button { size: ButtonSize::Sm, "Small" }
+                                        Button { "Default" }
+                                        Button { size: ButtonSize::Lg, "Large" }
+                                        Button { size: ButtonSize::Icon, "★" }
+                                    }
+                                }
+                                Separator { style: "margin: 1rem 0;" }
+                                div { class: "ui-stack",
+                                    SpanHelper { "Badges" }
+                                    div { class: "ui-cluster",
+                                        Badge { "Default" }
+                                        Badge { variant: BadgeVariant::Secondary, "Secondary" }
+                                        Badge { variant: BadgeVariant::Destructive, "Destructive" }
+                                        Separator { orientation: SeparatorOrientation::Vertical, style: "height: 1.5rem;" }
+                                        Badge { variant: BadgeVariant::Outline, "Outline" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Select & dropdowns" }
+                                CardDescription { "Select, dropdown menu, tooltip and dynamic feedback." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    Label { html_for: "quick-theme", "Quick theme" }
+                                    Select {
+                                        id: Some("quick-theme".to_string()),
+                                        placeholder: "Choose theme",
+                                        options: select_options.clone(),
+                                        selected: theme_choice_signal(),
+                                        on_change: move |value| {
+                                            let mut signal = theme_choice_setter.clone();
+                                            signal.set(Some(value));
                                         },
                                     }
                                 }
-                            }
-                            SidebarInset {
-                                class: "ui-stack",
-                                h3 { style: "font-size: 1.2rem; font-weight: 600;", "{sidebar_title}" }
-                                p {
-                                    style: "color: hsl(var(--muted-foreground)); max-width: 460px;",
-                                    "{sidebar_body}"
-                                }
-                                SpanHelper { "Use the sidebar to swap the focused surface." }
-                            }
-                        }
-                    }
-                }
-
-                Card {
-                    CardHeader {
-                        CardTitle { "Selection controls" }
-                        CardDescription { "Checkboxes, switches, and radio groups stay in sync with signals." }
-                    }
-                    CardContent {
-                        div { class: "ui-stack",
-                            div { class: "ui-cluster",
-                                Checkbox {
-                                    id: Some("newsletter-opt".to_string()),
-                                    checked: newsletter_opt_in(),
-                                    on_checked_change: move |state| newsletter_opt_in_setter.clone().set(state),
-                                }
-                                Label { html_for: "newsletter-opt", "Subscribe to newsletter" }
-                            }
-                            div { class: "ui-cluster",
-                                Label { html_for: "dark-mode", "Dark mode" }
-                                Switch {
-                                    id: Some("dark-mode".to_string()),
-                                    checked: dark_mode(),
-                                    on_checked_change: move |state| dark_mode_setter.clone().set(state),
-                                }
-                            }
-                            Separator { style: "margin: 0.75rem 0;" }
-                            RadioGroup {
-                                default_value: contact_method(),
-                                on_value_change: move |value| contact_method_setter.clone().set(value),
                                 div { class: "ui-stack",
-                                    div { class: "ui-cluster",
-                                        RadioGroupItem { id: Some("contact-email".to_string()), value: "email" }
-                                        Label { html_for: "contact-email", "Email" }
+                                    SpanHelper { "Dropdown menu" }
+                                    DropdownMenu {
+                                        label: "Open menu",
+                                        items: menu_items.clone(),
+                                        on_select: move |value| {
+                                            let mut signal = menu_selection_setter.clone();
+                                            signal.set(format!("Selected action: {value}"));
+                                        },
                                     }
-                                    div { class: "ui-cluster",
-                                        RadioGroupItem { id: Some("contact-sms".to_string()), value: "sms" }
-                                        Label { html_for: "contact-sms", "SMS" }
-                                    }
-                                    div { class: "ui-cluster",
-                                        RadioGroupItem { id: Some("contact-call".to_string()), value: "call" }
-                                        Label { html_for: "contact-call", "Phone call" }
+                                    SpanHelper { "{menu_selection()}" }
+                                }
+                                div { class: "ui-stack",
+                                    SpanHelper { "Tooltip" }
+                                    Tooltip {
+                                        label: "Invite collaborators",
+                                        Button {
+                                            variant: ButtonVariant::Ghost,
+                                            size: ButtonSize::Sm,
+                                            "Hover me"
+                                        }
                                     }
                                 }
                             }
-                            SpanHelper { "{contact_text()}" }
                         }
                     }
-                }
 
-                Card {
-                    CardHeader {
-                        CardTitle { "Command & context" }
-                        CardDescription { "Command palette filtering and contextual menus." }
-                    }
-                    CardContent {
-                        div { class: "ui-stack",
-                            SpanHelper { "Command palette" }
-                            CommandPalette {
-                                items: command_items.clone(),
-                                on_select: move |value| {
-                                    let mut signal = command_selection_setter.clone();
-                                    signal.set(format!("Command selected: {value}"));
-                                },
+                    div {
+                        style: full_width_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Navigation patterns" }
+                                CardDescription { "Breadcrumbs, menus, pagination, and progress steps." }
                             }
-                            SpanHelper { "{command_selection()}" }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Context menu" }
-                            ContextMenu {
-                                items: context_items.clone(),
-                                on_select: move |value| {
-                                    let mut signal = context_selection_setter.clone();
-                                    signal.set(format!("Context action: {value}"));
-                                },
-                                div {
-                                    style: "padding: 1.5rem; border: 1px dashed hsl(var(--border)); border-radius: var(--radius); text-align: center;",
-                                    "Right click anywhere in this box"
-                                }
-                            }
-                            SpanHelper { "{context_selection()}" }
-                        }
-                    }
-                }
-
-                Card {
-                    CardHeader {
-                        CardTitle { "Tabs & panels" }
-                        CardDescription { "Tabbed navigation with content surfaces that stay in sync." }
-                    }
-                    CardContent {
-                        Tabs {
-                            default_value: "overview",
-                            TabsList {
-                                TabsTrigger { value: "overview", "Overview" }
-                                TabsTrigger { value: "analytics", "Analytics" }
-                                TabsTrigger { value: "reports", "Reports" }
-                            }
-                            TabsContent {
-                                value: "overview",
+                            CardContent {
                                 div { class: "ui-stack",
-                                    Label { html_for: "overview-search", "Search" }
-                                    Input { id: "overview-search", placeholder: "Search docs..." }
-                                    SpanHelper { "Triggers share the same focus ring and sizing as the original UI kit." }
+                                    SpanHelper { "Breadcrumb" }
+                                    Breadcrumb { items: breadcrumb_items.clone(), separator: ">".to_string() }
                                 }
-                            }
-                            TabsContent {
-                                value: "analytics",
                                 div { class: "ui-stack",
-                                    SpanHelper { "Analytics aggregates live metrics and shows their progress." }
-                                    Progress { value: 64.0, max: 100.0 }
+                                    SpanHelper { "Navigation menu" }
+                                    NavigationMenu { items: navigation_items.clone() }
                                 }
-                            }
-                            TabsContent {
-                                value: "reports",
                                 div { class: "ui-stack",
-                                    SpanHelper { "Generate PDF, CSV, or scheduled exports directly from here." }
-                                    Button { variant: ButtonVariant::Secondary, "Create report" }
+                                    SpanHelper { "Menubar" }
+                                    Menubar {
+                                        menus: menubar_menus.clone(),
+                                        on_select: move |value| {
+                                            let mut signal = menubar_selection_setter.clone();
+                                            signal.set(format!("Menubar selected: {value}"));
+                                        },
+                                    }
+                                    SpanHelper { "{menubar_selection()}" }
+                                }
+                                div { class: "ui-stack",
+                                    SpanHelper { "Pagination" }
+                                    Pagination {
+                                        total_pages: total_pages,
+                                        current_page: pagination_current(),
+                                        on_page_change: move |page| {
+                                            let mut signal = pagination_setter.clone();
+                                            signal.set(page);
+                                        },
+                                    }
+                                    SpanHelper { "{pagination_summary()}" }
+                                }
+                                div { class: "ui-stack",
+                                    SpanHelper { "Steps" }
+                                    Steps {
+                                        steps: steps_items.clone(),
+                                        current: steps_current(),
+                                    }
+                                    div { class: "ui-cluster",
+                                        Button {
+                                            variant: ButtonVariant::Outline,
+                                            size: ButtonSize::Sm,
+                                            on_click: move |_| {
+                                                let mut signal = steps_setter.clone();
+                                                let prev = signal().saturating_sub(1).max(1);
+                                                signal.set(prev);
+                                            },
+                                            "Previous"
+                                        }
+                                        Button {
+                                            size: ButtonSize::Sm,
+                                            on_click: move |_| {
+                                                let mut signal = steps_setter.clone();
+                                                let next = (signal() + 1).min(steps_total);
+                                                signal.set(next);
+                                            },
+                                            "Next"
+                                        }
+                                    }
+                                    SpanHelper { "{steps_summary()}" }
                                 }
                             }
                         }
                     }
-                }
 
-                Card {
-                    CardHeader {
-                        CardTitle { "Dialogs & overlays" }
-                        CardDescription { "Popover, hover card, dialogs, sheet, and toast examples." }
+                    div {
+                        style: full_width_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Structural navigation" }
+                                CardDescription { "Collapsible sidebar layout with grouped menus." }
+                            }
+                            CardContent {
+                                SidebarLayout {
+                                    Sidebar {
+                                        collapsed: collapsed_state,
+                                        SidebarHeader {
+                                            div { class: "ui-sidebar-button-body",
+                                                span { class: "ui-sidebar-icon", "⚡" }
+                                                span { class: "ui-sidebar-text",
+                                                    span { class: "ui-sidebar-label", "Acme HQ" }
+                                                    span { class: "ui-sidebar-description", "Operations console" }
+                                                }
+                                            }
+                                        }
+                                        SidebarContent {
+                                            SidebarGroup {
+                                                SidebarGroupLabel { "Workspace" }
+                                                SidebarGroupContent {
+                                                    SidebarMenu {
+                                                        SidebarMenuItem {
+                                                        SidebarMenuButton {
+                                                                label: "Analytics",
+                                                                description: Some("Track KPIs and trends".into()),
+                                                                icon: Some("📊".into()),
+                                                                active: is_analytics_active,
+                                                                on_click: move |_| {
+                                                                    let mut signal = sidebar_active_setter.clone();
+                                                                    signal.set("analytics".to_string());
+                                                                },
+                                                            }
+                                                        }
+                                                        SidebarMenuItem {
+                                                        SidebarMenuButton {
+                                                                label: "CRM",
+                                                                description: Some("Manage customer pipeline".into()),
+                                                                icon: Some("👥".into()),
+                                                                active: is_crm_active,
+                                                                on_click: move |_| {
+                                                                    let mut signal = sidebar_active_setter.clone();
+                                                                    signal.set("crm".to_string());
+                                                                },
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            SidebarSeparator {}
+                                            SidebarGroup {
+                                                SidebarGroupLabel { "Reporting" }
+                                                SidebarGroupContent {
+                                                    SidebarMenu {
+                                                        SidebarMenuItem {
+                                                        SidebarMenuButton {
+                                                                label: "Billing",
+                                                                description: Some("Invoices, usage, balances".into()),
+                                                                icon: Some("💳".into()),
+                                                                badge: Some("8".into()),
+                                                                active: is_billing_active,
+                                                                on_click: move |_| {
+                                                                    let mut signal = sidebar_active_setter.clone();
+                                                                    signal.set("billing".to_string());
+                                                                },
+                                                            }
+                                                        }
+                                                        SidebarMenuItem {
+                                                        SidebarMenuButton {
+                                                                label: "Settings",
+                                                                description: Some("Themes, tokens, notifications".into()),
+                                                                icon: Some("⚙️".into()),
+                                                                active: is_settings_active,
+                                                                on_click: move |_| {
+                                                                    let mut signal = sidebar_active_setter.clone();
+                                                                    signal.set("settings".to_string());
+                                                                },
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        SidebarFooter {
+                                            SidebarTrigger {
+                                                collapsed: collapsed_state,
+                                                label: Some("Toggle sidebar".to_string()),
+                                                on_toggle: move |next| {
+                                                    let mut signal = sidebar_collapsed_setter.clone();
+                                                    signal.set(next);
+                                                },
+                                            }
+                                        }
+                                    }
+                                    SidebarInset {
+                                        class: "ui-stack",
+                                        h3 { style: "font-size: 1.2rem; font-weight: 600;", "{sidebar_title}" }
+                                        p {
+                                            style: "color: hsl(var(--muted-foreground)); max-width: 460px;",
+                                            "{sidebar_body}"
+                                        }
+                                        SpanHelper { "Use the sidebar to swap the focused surface." }
+                                    }
+                                }
+                            }
+                        }
                     }
-                    CardContent {
-                        div { class: "ui-cluster",
-                            Button {
-                                variant: ButtonVariant::Secondary,
-                                on_click: move |_| {
-                                    let mut signal = dialog_signal.clone();
-                                    signal.set(true);
-                                },
-                                "Open dialog"
-                            }
-                            Button {
-                                variant: ButtonVariant::Outline,
-                                on_click: move |_| {
-                                    let mut signal = sheet_signal.clone();
-                                    signal.set(true);
-                                },
-                                "Open sheet"
-                            }
-                            Button {
-                                variant: ButtonVariant::Ghost,
-                                on_click: move |_| {
-                                    let mut signal = toast_signal.clone();
-                                    signal.set(true);
-                                },
-                                "Notify me"
-                            }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Popover" }
-                            Popover {
-                                placement: "bottom".to_string(),
-                                trigger: rsx! { Button { variant: ButtonVariant::Outline, size: ButtonSize::Sm, "Toggle popover" } },
-                                content: rsx! { SpanHelper { "Choose the dialog or sheet you want to configure." } },
-                            }
-                        }
-                        div { class: "ui-stack",
-                            SpanHelper { "Hover card" }
-                            HoverCard {
-                                trigger: rsx! { Badge { variant: BadgeVariant::Secondary, "Hover me" } },
-                                content: rsx! { span { style: "font-size: 0.8rem; color: hsl(var(--muted-foreground));", "Preview contextual information instantly." } },
-                            }
-                        }
-                    }
-                }
 
-                Card {
-                    CardHeader {
-                        CardTitle { "Alerts & extras" }
-                        CardDescription { "Feedback surfaces, accordions, and avatar fallbacks." }
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Selection controls" }
+                                CardDescription { "Checkboxes, switches, and radio groups stay in sync with signals." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    div { class: "ui-cluster",
+                                        Checkbox {
+                                            id: Some("newsletter-opt".to_string()),
+                                            checked: newsletter_opt_in(),
+                                            on_checked_change: move |state| newsletter_opt_in_setter.clone().set(state),
+                                        }
+                                        Label { html_for: "newsletter-opt", "Subscribe to newsletter" }
+                                    }
+                                    div { class: "ui-cluster",
+                                        Label { html_for: "dark-mode", "Dark mode" }
+                                        Switch {
+                                            id: Some("dark-mode".to_string()),
+                                            checked: dark_mode(),
+                                            on_checked_change: move |state| dark_mode_setter.clone().set(state),
+                                        }
+                                    }
+                                    Separator { style: "margin: 0.75rem 0;" }
+                                    RadioGroup {
+                                        default_value: contact_method(),
+                                        on_value_change: move |value| contact_method_setter.clone().set(value),
+                                        div { class: "ui-stack",
+                                            div { class: "ui-cluster",
+                                                RadioGroupItem { id: Some("contact-email".to_string()), value: "email" }
+                                                Label { html_for: "contact-email", "Email" }
+                                            }
+                                            div { class: "ui-cluster",
+                                                RadioGroupItem { id: Some("contact-sms".to_string()), value: "sms" }
+                                                Label { html_for: "contact-sms", "SMS" }
+                                            }
+                                            div { class: "ui-cluster",
+                                                RadioGroupItem { id: Some("contact-call".to_string()), value: "call" }
+                                                Label { html_for: "contact-call", "Phone call" }
+                                            }
+                                        }
+                                    }
+                                    SpanHelper { "{contact_text()}" }
+                                }
+                            }
+                        }
                     }
-                    CardContent {
-                        div { class: "ui-stack",
-                            Alert {
-                                title: Some("Heads up!".to_string()),
-                                "We just shipped async server functions to production."
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Command & context" }
+                                CardDescription { "Command palette filtering and contextual menus." }
                             }
-                            Alert {
-                                variant: AlertVariant::Destructive,
-                                title: Some("Deployment failed".to_string()),
-                                "Check the build logs and retry once the issue is resolved."
+                            CardContent {
+                                div { class: "ui-stack",
+                                    SpanHelper { "Command palette" }
+                                    CommandPalette {
+                                        items: command_items.clone(),
+                                        on_select: move |value| {
+                                            let mut signal = command_selection_setter.clone();
+                                            signal.set(format!("Command selected: {value}"));
+                                        },
+                                    }
+                                    SpanHelper { "{command_selection()}" }
+                                }
+                                div { class: "ui-stack",
+                                    SpanHelper { "Context menu" }
+                                    ContextMenu {
+                                        items: context_items.clone(),
+                                        on_select: move |value| {
+                                            let mut signal = context_selection_setter.clone();
+                                            signal.set(format!("Context action: {value}"));
+                                        },
+                                        div {
+                                            style: "padding: 1.5rem; border: 1px dashed hsl(var(--border)); border-radius: var(--radius); text-align: center;",
+                                            "Right click anywhere in this box"
+                                        }
+                                    }
+                                    SpanHelper { "{context_selection()}" }
+                                }
                             }
                         }
-                        Separator { style: "margin: 1rem 0;" }
-                        Accordion {
-                            collapsible: true,
-                            default_value: Some("item-1".to_string()),
-                            AccordionItem {
-                                value: "item-1".to_string(),
-                                AccordionTrigger { "What is shadcn/ui?" }
-                                AccordionContent {
-                                    "A collection of unstyled, accessible primitives built on top of Radix, ready for your design system."
-                                }
+                    }
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Tabs & panels" }
+                                CardDescription { "Tabbed navigation with content surfaces that stay in sync." }
                             }
-                            AccordionItem {
-                                value: "item-2".to_string(),
-                                AccordionTrigger { "Does this work with Dioxus?" }
-                                AccordionContent {
-                                    "Yes! These components mirror the shadcn/ui ergonomics using Dioxus 0.7 signals."
+                            CardContent {
+                                Tabs {
+                                    default_value: "overview",
+                                    TabsList {
+                                        TabsTrigger { value: "overview", "Overview" }
+                                        TabsTrigger { value: "analytics", "Analytics" }
+                                        TabsTrigger { value: "reports", "Reports" }
+                                    }
+                                    TabsContent {
+                                        value: "overview",
+                                        div { class: "ui-stack",
+                                            Label { html_for: "overview-search", "Search" }
+                                            Input { id: "overview-search", placeholder: "Search docs..." }
+                                            SpanHelper { "Triggers share the same focus ring and sizing as the original UI kit." }
+                                        }
+                                    }
+                                    TabsContent {
+                                        value: "analytics",
+                                        div { class: "ui-stack",
+                                            SpanHelper { "Analytics aggregates live metrics and shows their progress." }
+                                            Progress { value: 64.0, max: 100.0 }
+                                        }
+                                    }
+                                    TabsContent {
+                                        value: "reports",
+                                        div { class: "ui-stack",
+                                            SpanHelper { "Generate PDF, CSV, or scheduled exports directly from here." }
+                                            Button { variant: ButtonVariant::Secondary, "Create report" }
+                                        }
+                                    }
                                 }
                             }
                         }
-                        Separator { style: "margin: 1rem 0;" }
-                        div { class: "ui-cluster",
-                            Tooltip {
-                                label: "Ada Lovelace",
-                                Avatar {
-                                    alt: Some("Ada Lovelace".to_string()),
-                                    fallback: Some("AL".to_string()),
+                    }
+
+                    div {
+                        style: full_width_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Dialogs & overlays" }
+                                CardDescription { "Popover, hover card, dialogs, sheet, and toast examples." }
+                            }
+                            CardContent {
+                                div { class: "ui-cluster",
+                                    Button {
+                                        variant: ButtonVariant::Secondary,
+                                        on_click: move |_| {
+                                            let mut signal = dialog_signal.clone();
+                                            signal.set(true);
+                                        },
+                                        "Open dialog"
+                                    }
+                                    Button {
+                                        variant: ButtonVariant::Outline,
+                                        on_click: move |_| {
+                                            let mut signal = sheet_signal.clone();
+                                            signal.set(true);
+                                        },
+                                        "Open sheet"
+                                    }
+                                    Button {
+                                        variant: ButtonVariant::Ghost,
+                                        on_click: move |_| {
+                                            let mut signal = toast_signal.clone();
+                                            signal.set(true);
+                                        },
+                                        "Notify me"
+                                    }
+                                }
+                                div { class: "ui-stack",
+                                    SpanHelper { "Popover" }
+                                    Popover {
+                                        placement: "bottom".to_string(),
+                                        trigger: rsx! { Button { variant: ButtonVariant::Outline, size: ButtonSize::Sm, "Toggle popover" } },
+                                        content: rsx! { SpanHelper { "Choose the dialog or sheet you want to configure." } },
+                                    }
+                                }
+                                div { class: "ui-stack",
+                                    SpanHelper { "Hover card" }
+                                    HoverCard {
+                                        trigger: rsx! { Badge { variant: BadgeVariant::Secondary, "Hover me" } },
+                                        content: rsx! { span { style: "font-size: 0.8rem; color: hsl(var(--muted-foreground));", "Preview contextual information instantly." } },
+                                    }
                                 }
                             }
-                            Avatar {
-                                alt: Some("Grace Hopper".to_string()),
-                                fallback: Some("GH".to_string()),
+                        }
+                    }
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Alerts & extras" }
+                                CardDescription { "Feedback surfaces, accordions, and avatar fallbacks." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    Alert {
+                                        title: Some("Heads up!".to_string()),
+                                        "We just shipped async server functions to production."
+                                    }
+                                    Alert {
+                                        variant: AlertVariant::Destructive,
+                                        title: Some("Deployment failed".to_string()),
+                                        "Check the build logs and retry once the issue is resolved."
+                                    }
+                                }
+                                Separator { style: "margin: 1rem 0;" }
+                                Accordion {
+                                    collapsible: true,
+                                    default_value: Some("item-1".to_string()),
+                                    AccordionItem {
+                                        value: "item-1".to_string(),
+                                        AccordionTrigger { "What is shadcn/ui?" }
+                                        AccordionContent {
+                                            "A collection of unstyled, accessible primitives built on top of Radix, ready for your design system."
+                                        }
+                                    }
+                                    AccordionItem {
+                                        value: "item-2".to_string(),
+                                        AccordionTrigger { "Does this work with Dioxus?" }
+                                        AccordionContent {
+                                            "Yes! These components mirror the shadcn/ui ergonomics using Dioxus 0.7 signals."
+                                        }
+                                    }
+                                }
+                                Separator { style: "margin: 1rem 0;" }
+                                div { class: "ui-cluster",
+                                    Tooltip {
+                                        label: "Ada Lovelace",
+                                        Avatar {
+                                            alt: Some("Ada Lovelace".to_string()),
+                                            fallback: Some("AL".to_string()),
+                                        }
+                                    }
+                                    Avatar {
+                                        alt: Some("Grace Hopper".to_string()),
+                                        fallback: Some("GH".to_string()),
+                                    }
+                                }
                             }
                         }
                     }
