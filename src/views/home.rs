@@ -1,9 +1,11 @@
 use crate::components::{
     ui::{
+        Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertVariant, Avatar,
         Badge, BadgeVariant, Button, ButtonSize, ButtonVariant, Card, CardContent, CardDescription,
-        CardFooter, CardHeader, CardTitle, Checkbox, Input, Label, Progress, RadioGroup,
-        RadioGroupItem, Separator, SeparatorOrientation, Slider, Switch, Tabs, TabsContent,
-        TabsList, TabsTrigger, Textarea,
+        CardFooter, CardHeader, CardTitle, Checkbox, DropdownMenu, DropdownMenuItem, Input, Label,
+        Progress, RadioGroup, RadioGroupItem, Select, SelectOption, Separator,
+        SeparatorOrientation, Slider, Switch, Tabs, TabsContent, TabsList, TabsTrigger, Textarea,
+        Tooltip,
     },
     Echo, Hero,
 };
@@ -21,16 +23,51 @@ pub fn Home() -> Element {
 
 #[component]
 fn UiShowcase() -> Element {
-    let mut accepted_terms = use_signal(|| false);
-    let mut email_notifications = use_signal(|| true);
-    let mut slider_value = use_signal(|| 42.0f32);
-    let mut contact_method = use_signal(|| "email".to_string());
-    let mut newsletter_opt_in = use_signal(|| true);
-    let mut dark_mode = use_signal(|| false);
+    let accepted_terms = use_signal(|| false);
+    let email_notifications = use_signal(|| true);
+    let slider_value = use_signal(|| 42.0f32);
+    let contact_method = use_signal(|| "email".to_string());
+    let newsletter_opt_in = use_signal(|| true);
+    let dark_mode = use_signal(|| false);
+    let theme_choice = use_signal(|| Some("system".to_string()));
+    let menu_selection = use_signal(|| "Select a menu action".to_string());
     let slider_value_signal = slider_value.clone();
+    let slider_value_setter = slider_value.clone();
     let contact_method_signal = contact_method.clone();
+    let theme_choice_signal = theme_choice.clone();
+    let accepted_terms_setter = accepted_terms.clone();
+    let email_notifications_setter = email_notifications.clone();
+    let contact_method_setter = contact_method.clone();
+    let newsletter_opt_in_setter = newsletter_opt_in.clone();
+    let dark_mode_setter = dark_mode.clone();
+    let theme_choice_setter = theme_choice.clone();
+    let menu_selection_setter = menu_selection.clone();
     let intensity_text = move || format!("Accent intensity: {:.0}%", slider_value_signal());
     let contact_text = move || format!("Preferred contact: {}", contact_method_signal());
+    let select_options = vec![
+        SelectOption::new("System", "system"),
+        SelectOption::new("Light", "light"),
+        SelectOption::new("Dark", "dark"),
+    ];
+    let menu_items = vec![
+        DropdownMenuItem::new("Profile", "profile").with_shortcut("⌘P"),
+        DropdownMenuItem::new("Billing", "billing").with_shortcut("⌘B"),
+        DropdownMenuItem::new("Team", "team"),
+        DropdownMenuItem::new("Sign out", "logout").destructive(),
+    ];
+    let theme_display = {
+        let current = theme_choice();
+        current
+            .as_ref()
+            .and_then(|value| {
+                select_options
+                    .iter()
+                    .find(|option| option.value == *value)
+                    .map(|option| option.label.clone())
+            })
+            .unwrap_or_else(|| "System".to_string())
+    };
+    let theme_summary = format!("Active theme: {theme_display}");
 
     rsx! {
         section {
@@ -74,29 +111,46 @@ fn UiShowcase() -> Element {
                                 min: 0.0,
                                 max: 100.0,
                                 step: 1.0,
-                                on_value_change: move |val| slider_value.set(val),
+                                on_value_change: {
+                                    let mut signal = slider_value_setter.clone();
+                                    move |val| signal.set(val)
+                                },
                             }
                             Progress { value: slider_value(), max: 100.0 }
                             SpanHelper { "{intensity_text()}" }
                         }
-                        div { class: "ui-bleed",
-                            div { class: "ui-cluster",
-                                Checkbox {
-                                    id: Some("accept-terms".to_string()),
-                                    checked: accepted_terms(),
-                                    on_checked_change: move |state| accepted_terms.set(state),
-                                }
-                                Label { html_for: "accept-terms", "Agree to terms" }
+                        div { class: "ui-stack",
+                            Label { html_for: "theme-select", "Theme preference" }
+                            Select {
+                                id: Some("theme-select".to_string()),
+                                placeholder: "Select a theme",
+                                options: select_options.clone(),
+                                selected: theme_choice_signal(),
+                                on_change: move |value| {
+                                    let mut signal = theme_choice_setter.clone();
+                                    signal.set(Some(value));
+                                },
                             }
-                            div { class: "ui-cluster",
-                                Label { html_for: "profile-emails", "Email notifications" }
-                                Switch {
-                                    id: Some("profile-emails".to_string()),
-                                    checked: email_notifications(),
-                                    on_checked_change: move |state| email_notifications.set(state),
-                                }
-                            }
+                            SpanHelper { "{theme_summary}" }
                         }
+                        div { class: "ui-bleed",
+                                div { class: "ui-cluster",
+                                    Checkbox {
+                                        id: Some("accept-terms".to_string()),
+                                        checked: accepted_terms(),
+                                        on_checked_change: move |state| accepted_terms_setter.clone().set(state),
+                                    }
+                                    Label { html_for: "accept-terms", "Agree to terms" }
+                                }
+                                div { class: "ui-cluster",
+                                    Label { html_for: "profile-emails", "Email notifications" }
+                                    Switch {
+                                        id: Some("profile-emails".to_string()),
+                                        checked: email_notifications(),
+                                        on_checked_change: move |state| email_notifications_setter.clone().set(state),
+                                    }
+                                }
+                            }
                     }
                     CardFooter {
                         div { class: "ui-cluster",
@@ -148,6 +202,51 @@ fn UiShowcase() -> Element {
 
                 Card {
                     CardHeader {
+                        CardTitle { "Select & menus" }
+                        CardDescription { "Select, dropdown menu, tooltip and dynamic feedback." }
+                    }
+                    CardContent {
+                        div { class: "ui-stack",
+                            Label { html_for: "quick-theme", "Quick theme" }
+                            Select {
+                                id: Some("quick-theme".to_string()),
+                                placeholder: "Choose theme",
+                                options: select_options.clone(),
+                                selected: theme_choice_signal(),
+                                on_change: move |value| {
+                                    let mut signal = theme_choice_setter.clone();
+                                    signal.set(Some(value));
+                                },
+                            }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Dropdown menu" }
+                            DropdownMenu {
+                                label: "Open menu",
+                                items: menu_items.clone(),
+                                on_select: move |value| {
+                                    let mut signal = menu_selection_setter.clone();
+                                    signal.set(format!("Selected action: {value}"));
+                                },
+                            }
+                            SpanHelper { "{menu_selection()}" }
+                        }
+                        div { class: "ui-stack",
+                            SpanHelper { "Tooltip" }
+                            Tooltip {
+                                label: "Invite collaborators",
+                                Button {
+                                    variant: ButtonVariant::Ghost,
+                                    size: ButtonSize::Sm,
+                                    "Hover me"
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Card {
+                    CardHeader {
                         CardTitle { "Selection controls" }
                         CardDescription { "Checkboxes, switches, and radio groups stay in sync with signals." }
                     }
@@ -157,7 +256,7 @@ fn UiShowcase() -> Element {
                                 Checkbox {
                                     id: Some("newsletter-opt".to_string()),
                                     checked: newsletter_opt_in(),
-                                    on_checked_change: move |state| newsletter_opt_in.set(state),
+                                    on_checked_change: move |state| newsletter_opt_in_setter.clone().set(state),
                                 }
                                 Label { html_for: "newsletter-opt", "Subscribe to newsletter" }
                             }
@@ -166,13 +265,13 @@ fn UiShowcase() -> Element {
                                 Switch {
                                     id: Some("dark-mode".to_string()),
                                     checked: dark_mode(),
-                                    on_checked_change: move |state| dark_mode.set(state),
+                                    on_checked_change: move |state| dark_mode_setter.clone().set(state),
                                 }
                             }
                             Separator { style: "margin: 0.75rem 0;" }
                             RadioGroup {
                                 default_value: contact_method(),
-                                on_value_change: move |value| contact_method.set(value),
+                                on_value_change: move |value| contact_method_setter.clone().set(value),
                                 div { class: "ui-stack",
                                     div { class: "ui-cluster",
                                         RadioGroupItem { id: Some("contact-email".to_string()), value: "email" }
@@ -227,6 +326,59 @@ fn UiShowcase() -> Element {
                                     SpanHelper { "Generate PDF, CSV, or scheduled exports directly from here." }
                                     Button { variant: ButtonVariant::Secondary, "Create report" }
                                 }
+                            }
+                        }
+                    }
+                }
+
+                Card {
+                    CardHeader {
+                        CardTitle { "Alerts & extras" }
+                        CardDescription { "Feedback surfaces, accordions, and avatar fallbacks." }
+                    }
+                    CardContent {
+                        div { class: "ui-stack",
+                            Alert {
+                                title: Some("Heads up!".to_string()),
+                                "We just shipped async server functions to production."
+                            }
+                            Alert {
+                                variant: AlertVariant::Destructive,
+                                title: Some("Deployment failed".to_string()),
+                                "Check the build logs and retry once the issue is resolved."
+                            }
+                        }
+                        Separator { style: "margin: 1rem 0;" }
+                        Accordion {
+                            collapsible: true,
+                            default_value: Some("item-1".to_string()),
+                            AccordionItem {
+                                value: "item-1".to_string(),
+                                AccordionTrigger { "What is shadcn/ui?" }
+                                AccordionContent {
+                                    "A collection of unstyled, accessible primitives built on top of Radix, ready for your design system."
+                                }
+                            }
+                            AccordionItem {
+                                value: "item-2".to_string(),
+                                AccordionTrigger { "Does this work with Dioxus?" }
+                                AccordionContent {
+                                    "Yes! These components mirror the shadcn/ui ergonomics using Dioxus 0.7 signals."
+                                }
+                            }
+                        }
+                        Separator { style: "margin: 1rem 0;" }
+                        div { class: "ui-cluster",
+                            Tooltip {
+                                label: "Ada Lovelace",
+                                Avatar {
+                                    alt: Some("Ada Lovelace".to_string()),
+                                    fallback: Some("AL".to_string()),
+                                }
+                            }
+                            Avatar {
+                                alt: Some("Grace Hopper".to_string()),
+                                fallback: Some("GH".to_string()),
                             }
                         }
                     }
