@@ -1,0 +1,319 @@
+:root {
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 72px;
+    --topbar-height: 72px;
+}
+
+.ui-shell {
+    min-height: 100vh;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    background-color: hsl(var(--muted));
+    border-radius: 0;
+}
+
+.ui-sidebar-layout.admin-shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    min-height: 100vh;
+    background-color: hsl(var(--background));
+}
+
+.ui-sidebar-layout.admin-shell .ui-sidebar-rail {
+    display: none;
+}
+
+.ui-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background-color: hsl(var(--card));
+    border-right: 1px solid hsl(var(--border));
+    padding: 28px 24px;
+    transition: width 0.25s ease, padding 0.25s ease;
+}
+
+.ui-sidebar[data-collapsed="true"] {
+    width: var(--sidebar-collapsed-width);
+    padding: 28px 14px;
+}
+
+.ui-sidebar-header,
+.ui-sidebar-content,
+.ui-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    color: hsl(var(--primary-foreground));
+    font-size: 18px;
+}
+
+.sidebar-name {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.sidebar-subtitle {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.ui-sidebar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ui-sidebar-group-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    letter-spacing: 0.08em;
+}
+
+.ui-sidebar-menu {
+    width: 100%;
+}
+
+.ui-sidebar-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.ui-sidebar-menu-button {
+    display: inline-flex;
+    width: 100%;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: hsl(var(--foreground));
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    text-align: left;
+    text-decoration: none;
+}
+
+.ui-sidebar-menu-button:hover {
+    background-color: hsl(var(--muted));
+}
+
+.ui-sidebar-menu-button[data-active="true"] {
+    background-color: hsl(var(--accent));
+    border-color: hsl(var(--border));
+}
+
+.ui-sidebar-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(var(--muted));
+    font-size: 0.95rem;
+}
+
+.ui-sidebar-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ui-sidebar-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.ui-sidebar-description {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.ui-sidebar-badge {
+    margin-left: auto;
+    font-size: 0.75rem;
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+}
+
+.sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius));
+    background-color: hsl(var(--muted));
+}
+
+.sidebar-profile-name {
+    font-weight: 600;
+}
+
+.sidebar-profile-role {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.8rem;
+}
+
+.admin-shell-inset {
+    display: flex;
+    flex-direction: column;
+    background-color: hsl(var(--background));
+    min-height: 100vh;
+}
+
+.admin-shell-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    justify-content: space-between;
+    padding: 24px 32px;
+    border-bottom: 1px solid hsl(var(--border));
+    background-color: hsla(var(--background), 0.95);
+    backdrop-filter: blur(12px);
+    min-height: var(--topbar-height);
+}
+
+.admin-shell-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-shell-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.admin-shell-description {
+    margin: 0;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.95rem;
+}
+
+.admin-shell-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-shell-content {
+    flex: 1;
+    width: 100%;
+    padding: 32px;
+    background-color: hsl(var(--muted));
+    min-height: calc(100vh - var(--topbar-height));
+}
+
+.dashboard-root {
+    width: 100%;
+    margin: 0;
+}
+
+.ui-sidebar-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 0.5rem 0.8rem;
+    font-weight: 500;
+}
+
+.ui-sidebar[data-collapsed="true"] .sidebar-name,
+.ui-sidebar[data-collapsed="true"] .sidebar-subtitle,
+.ui-sidebar[data-collapsed="true"] .ui-sidebar-text,
+.ui-sidebar[data-collapsed="true"] .ui-sidebar-badge,
+.ui-sidebar[data-collapsed="true"] .sidebar-profile div,
+.ui-sidebar[data-collapsed="true"] .sidebar-profile-role,
+.ui-sidebar[data-collapsed="true"] .ui-sidebar-group-label {
+    display: none;
+}
+
+.ui-sidebar[data-collapsed="true"] .sidebar-profile {
+    justify-content: center;
+    padding: 12px 8px;
+}
+
+.ui-sidebar[data-collapsed="true"] .ui-sidebar-menu-button {
+    justify-content: center;
+}
+
+@media (max-width: 960px) {
+    .ui-sidebar-layout.admin-shell {
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .ui-sidebar-layout.admin-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .ui-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        transform: translateX(-100%);
+        width: var(--sidebar-width);
+        max-width: 90vw;
+        box-shadow: 0 20px 50px -24px rgba(15, 23, 42, 0.45);
+        z-index: 20;
+    }
+
+    .ui-sidebar[data-collapsed="true"] {
+        transform: translateX(-100%);
+    }
+
+    .ui-sidebar[data-collapsed="false"] {
+        transform: translateX(0);
+    }
+
+    .admin-shell-topbar {
+        gap: 12px;
+    }
+
+    .admin-shell-actions {
+        display: none;
+    }
+
+    .admin-shell-content {
+        padding: 24px;
+    }
+
+    .dashboard-root {
+        width: 100%;
+    }
+}
