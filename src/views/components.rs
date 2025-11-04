@@ -6,14 +6,14 @@ use crate::components::ui::{
     ContextItem, ContextMenu, Crumb, DateRange, DateRangePicker, Dialog, DropdownMenu,
     DropdownMenuItem, FileDropZone, FileMetadata, FormField, FormMessage, FormMessageVariant,
     HoverCard, Input, Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu,
-    Pagination, Popover, Progress, RadioGroup, RadioGroupItem, ResizableOrientation,
-    ResizablePanels, ScrollArea, Select, SelectOption, Separator, SeparatorOrientation, Sheet,
-    SheetSide, Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
-    SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout, SidebarMenu, SidebarMenuButton,
-    SidebarMenuItem, SidebarSeparator, SidebarTrigger, Skeleton, Slider, StepItem, Steps, Switch,
-    Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs,
-    TabsContent, TabsList, TabsTrigger, Textarea, Toast, ToastViewport, Toggle, ToggleGroup,
-    ToggleGroupItem, ToggleGroupMode, ToggleGroupOrientation, Tooltip,
+    Pagination, Popover, Progress, RadioGroup, RadioGroupItem, ScrollArea, Select, SelectOption,
+    Separator, SeparatorOrientation, Sheet, SheetSide, Sidebar, SidebarContent, SidebarFooter,
+    SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset,
+    SidebarLayout, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator,
+    SidebarTrigger, Skeleton, Slider, StepItem, Steps, Switch, Table, TableBody, TableCaption,
+    TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList,
+    TabsTrigger, Textarea, Toast, ToastViewport, Toggle, ToggleGroup, ToggleGroupItem,
+    ToggleGroupMode, ToggleGroupOrientation, Tooltip,
 };
 use chrono::NaiveDate;
 use dioxus::html::events::FormEvent;
@@ -69,7 +69,6 @@ fn UiShowcase() -> Element {
         ))
     });
     let dropzone_files = use_signal(|| Vec::<FileMetadata>::new());
-    let resizable_ratio = use_signal(|| 0.45f32);
     let slider_value_signal = slider_value.clone();
     let slider_value_setter = slider_value.clone();
     let contact_method_signal = contact_method.clone();
@@ -109,8 +108,6 @@ fn UiShowcase() -> Element {
     let date_range_setter = date_range_value.clone();
     let dropzone_files_signal = dropzone_files.clone();
     let dropzone_files_setter = dropzone_files.clone();
-    let resizable_ratio_signal = resizable_ratio.clone();
-    let resizable_ratio_setter = resizable_ratio.clone();
     let intensity_text = move || format!("Accent intensity: {:.0}%", slider_value_signal());
     let contact_text = move || format!("Preferred contact: {}", contact_method_signal());
     let profile_preview = move || {
@@ -166,14 +163,6 @@ fn UiShowcase() -> Element {
         } else {
             format!("{} file(s) staged.", files.len())
         }
-    };
-    let resizable_summary = move || {
-        let ratio = resizable_ratio_signal();
-        format!(
-            "Split: {:.0}% / {:.0}%",
-            ratio * 100.0,
-            (1.0 - ratio) * 100.0
-        )
     };
     let select_options = vec![
         SelectOption::new("System", "system"),
@@ -504,7 +493,7 @@ fn UiShowcase() -> Element {
                         Card {
                             CardHeader {
                                 CardTitle { "Layout & uploads" }
-                                CardDescription { "Aspect ratios, resizable panels, and drag-and-drop staging." }
+                                CardDescription { "Aspect ratios and drag-and-drop staging." }
                             }
                             CardContent {
                                 div { class: "ui-stack",
@@ -514,31 +503,6 @@ fn UiShowcase() -> Element {
                                             style: "width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.3), transparent); border-radius: calc(var(--radius) - 2px); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: hsl(var(--muted-foreground));",
                                             "Video or hero media stays perfectly scaled."
                                         }
-                                    }
-                                    ResizablePanels {
-                                        orientation: ResizableOrientation::Horizontal,
-                                        initial: resizable_ratio_signal(),
-                                        on_resize: {
-                                            let mut setter = resizable_ratio_setter.clone();
-                                            move |ratio| setter.set(ratio)
-                                        },
-                                        first: rsx! {
-                                            div { class: "ui-stack",
-                                                SpanHelper { "Primary workbench" }
-                                                SpanHelper { "Keep data tables or editors anchored on the left." }
-                                            }
-                                        },
-                                        second: rsx! {
-                                            div { class: "ui-stack",
-                                                SpanHelper { "Preview" }
-                                                SpanHelper { "Live output or documentation tracks on the right pane." }
-                                            }
-                                        }
-                                    }
-                                    FormMessage {
-                                        variant: FormMessageVariant::Helper,
-                                        class: Some("ui-field-helper".to_string()),
-                                        "{resizable_summary()}"
                                     }
                                     FileDropZone {
                                         multiple: true,

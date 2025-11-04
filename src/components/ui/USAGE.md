@@ -238,29 +238,6 @@ fn ScrollAreaSample() -> Element {
 }
 ```
 
-### ResizablePanels
-
-可拖拽的双列布局。
-
-- `initial`/`min`/`max` 控制百分比分布；`orientation` 可设 Horizontal / Vertical。
-- `on_resize` 回调返回当前主面板占比。
-
-```rust
-use crate::components::ui::{ResizableOrientation, ResizablePanels};
-use dioxus::prelude::*;
-
-#[component]
-fn ResizableSample() -> Element {
-    rsx! {
-        ResizablePanels {
-            orientation: ResizableOrientation::Horizontal,
-            first: rsx! { div { class: "ui-pane-muted", "左侧面板" } },
-            second: rsx! { div { class: "ui-pane-surface", "右侧面板" } },
-        }
-    }
-}
-```
-
 ### Sidebar 体系
 
 包含构建侧边导航所需的所有子组件。
