@@ -1,19 +1,22 @@
 use crate::components::ui::{
-    Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertVariant, Avatar,
-    Badge, BadgeVariant, Breadcrumb, Button, ButtonSize, ButtonVariant, Calendar, Card,
-    CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, Combobox,
-    ComboboxOption, CommandItem, CommandPalette, ContextItem, ContextMenu, Crumb, Dialog,
-    DropdownMenu, DropdownMenuItem, FormField, FormMessage, FormMessageVariant, HoverCard, Input,
-    Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu, Pagination, Popover,
-    Progress, RadioGroup, RadioGroupItem, ScrollArea, Select, SelectOption, Separator,
-    SeparatorOrientation, Sheet, SheetSide, Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
-    SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout,
-    SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator, SidebarTrigger, Skeleton,
-    Slider, StepItem, Steps, Switch, Table, TableBody, TableCaption, TableCell, TableFooter,
-    TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, Toast,
-    ToastViewport, Toggle, Tooltip,
+    Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertVariant, AspectRatio,
+    Avatar, Badge, BadgeVariant, Breadcrumb, Button, ButtonSize, ButtonVariant, Calendar, Card,
+    CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, Collapsible,
+    CollapsibleContent, CollapsibleTrigger, Combobox, ComboboxOption, CommandItem, CommandPalette,
+    ContextItem, ContextMenu, Crumb, DateRange, DateRangePicker, Dialog, DropdownMenu,
+    DropdownMenuItem, FileDropZone, FileMetadata, FormField, FormMessage, FormMessageVariant,
+    HoverCard, Input, Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu,
+    Pagination, Popover, Progress, RadioGroup, RadioGroupItem, ResizableOrientation,
+    ResizablePanels, ScrollArea, Select, SelectOption, Separator, SeparatorOrientation, Sheet,
+    SheetSide, Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
+    SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout, SidebarMenu, SidebarMenuButton,
+    SidebarMenuItem, SidebarSeparator, SidebarTrigger, Skeleton, Slider, StepItem, Steps, Switch,
+    Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, Tabs,
+    TabsContent, TabsList, TabsTrigger, Textarea, Toast, ToastViewport, Toggle, ToggleGroup,
+    ToggleGroupItem, ToggleGroupMode, ToggleGroupOrientation, Tooltip,
 };
 use chrono::NaiveDate;
+use dioxus::html::events::FormEvent;
 use dioxus::prelude::*;
 
 #[component]
@@ -57,6 +60,16 @@ fn UiShowcase() -> Element {
     let toggle_active = use_signal(|| true);
     let calendar_selection =
         use_signal(|| Some(NaiveDate::from_ymd_opt(2024, 6, 11).expect("valid date")));
+    let collapsible_open = use_signal(|| false);
+    let toggle_group_values = use_signal(|| vec!["daily".to_string()]);
+    let date_range_value = use_signal(|| {
+        Some(DateRange::new(
+            NaiveDate::from_ymd_opt(2024, 6, 1).expect("valid start"),
+            NaiveDate::from_ymd_opt(2024, 6, 7).expect("valid end"),
+        ))
+    });
+    let dropzone_files = use_signal(|| Vec::<FileMetadata>::new());
+    let resizable_ratio = use_signal(|| 0.45f32);
     let slider_value_signal = slider_value.clone();
     let slider_value_setter = slider_value.clone();
     let contact_method_signal = contact_method.clone();
@@ -88,6 +101,16 @@ fn UiShowcase() -> Element {
     let toggle_active_setter = toggle_active.clone();
     let calendar_selection_signal = calendar_selection.clone();
     let calendar_selection_setter = calendar_selection.clone();
+    let collapsible_signal = collapsible_open.clone();
+    let collapsible_setter = collapsible_open.clone();
+    let toggle_group_signal = toggle_group_values.clone();
+    let toggle_group_setter = toggle_group_values.clone();
+    let date_range_signal = date_range_value.clone();
+    let date_range_setter = date_range_value.clone();
+    let dropzone_files_signal = dropzone_files.clone();
+    let dropzone_files_setter = dropzone_files.clone();
+    let resizable_ratio_signal = resizable_ratio.clone();
+    let resizable_ratio_setter = resizable_ratio.clone();
     let intensity_text = move || format!("Accent intensity: {:.0}%", slider_value_signal());
     let contact_text = move || format!("Preferred contact: {}", contact_method_signal());
     let profile_preview = move || {
@@ -118,6 +141,39 @@ fn UiShowcase() -> Element {
         } else {
             "Emails are paused until you re-enable them.".to_string()
         }
+    };
+    let toggle_group_summary = move || {
+        let values = toggle_group_signal();
+        if values.is_empty() {
+            "No frequencies selected.".to_string()
+        } else {
+            format!("Cadence: {}", values.join(", "))
+        }
+    };
+    let range_preview = move || match date_range_signal() {
+        Some(range) if range.start != range.end => format!(
+            "Range: {} → {}",
+            range.start.format("%b %d"),
+            range.end.format("%b %d %Y")
+        ),
+        Some(range) => format!("Single day: {}", range.start.format("%b %d, %Y")),
+        None => "Pick a date window to compare analytics.".to_string(),
+    };
+    let dropzone_summary = move || {
+        let files = dropzone_files_signal();
+        if files.is_empty() {
+            "No assets queued.".to_string()
+        } else {
+            format!("{} file(s) staged.", files.len())
+        }
+    };
+    let resizable_summary = move || {
+        let ratio = resizable_ratio_signal();
+        format!(
+            "Split: {:.0}% / {:.0}%",
+            ratio * 100.0,
+            (1.0 - ratio) * 100.0
+        )
     };
     let select_options = vec![
         SelectOption::new("System", "system"),
@@ -437,6 +493,147 @@ fn UiShowcase() -> Element {
                                             class: Some("ui-field-helper".to_string()),
                                             "{toggle_summary()}"
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Layout & uploads" }
+                                CardDescription { "Aspect ratios, resizable panels, and drag-and-drop staging." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    AspectRatio {
+                                        ratio: 16.0 / 9.0,
+                                        div {
+                                            style: "width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.3), transparent); border-radius: calc(var(--radius) - 2px); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: hsl(var(--muted-foreground));",
+                                            "Video or hero media stays perfectly scaled."
+                                        }
+                                    }
+                                    ResizablePanels {
+                                        orientation: ResizableOrientation::Horizontal,
+                                        initial: resizable_ratio_signal(),
+                                        on_resize: {
+                                            let mut setter = resizable_ratio_setter.clone();
+                                            move |ratio| setter.set(ratio)
+                                        },
+                                        first: rsx! {
+                                            div { class: "ui-stack",
+                                                SpanHelper { "Primary workbench" }
+                                                SpanHelper { "Keep data tables or editors anchored on the left." }
+                                            }
+                                        },
+                                        second: rsx! {
+                                            div { class: "ui-stack",
+                                                SpanHelper { "Preview" }
+                                                SpanHelper { "Live output or documentation tracks on the right pane." }
+                                            }
+                                        }
+                                    }
+                                    FormMessage {
+                                        variant: FormMessageVariant::Helper,
+                                        class: Some("ui-field-helper".to_string()),
+                                        "{resizable_summary()}"
+                                    }
+                                    FileDropZone {
+                                        multiple: true,
+                                        on_files: {
+                                            let mut setter = dropzone_files_setter.clone();
+                                            move |files| setter.set(files)
+                                        },
+                                        content: Some(rsx! {
+                                            div {
+                                                class: "ui-stack",
+                                                span { class: "ui-dropzone-title", "Drop brand assets" }
+                                                span { class: "ui-field-helper", "Supports PNG, SVG, and MP4 up to 200 MB." }
+                                            }
+                                        }),
+                                    }
+                                    FormMessage {
+                                        variant: FormMessageVariant::Helper,
+                                        class: Some("ui-field-helper".to_string()),
+                                        "{dropzone_summary()}"
+                                    }
+                                    if !dropzone_files_signal().is_empty() {
+                                        {
+                                            let files = dropzone_files_signal();
+                                            rsx! {
+                                                ul {
+                                                    style: "font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.35rem;",
+                                                    for file in files {
+                                                        {
+                                                            let label = format!("{} ({:.1} KB)", file.name, file.size as f64 / 1024.0);
+                                                            rsx! { li { "{label}" } }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Schedules & ranges" }
+                                CardDescription { "Collapsible filters, toggle groups, and dual-month range picking." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    Collapsible {
+                                        open: collapsible_signal.clone(),
+                                        on_open_change: {
+                                            let mut setter = collapsible_setter.clone();
+                                            move |state| setter.set(state)
+                                        },
+                                        CollapsibleTrigger { "Advanced filters" }
+                                        CollapsibleContent {
+                                            SpanHelper { "Keep optional controls tucked away until needed." }
+                                            SpanHelper { "Current state: " }
+                                            SpanHelper { if collapsible_signal() { "Expanded" } else { "Collapsed" } }
+                                        }
+                                    }
+                                    div { class: "ui-stack",
+                                        span { class: "ui-field-helper", "Delivery cadence" }
+                                        ToggleGroup {
+                                            values: toggle_group_signal.clone(),
+                                            mode: ToggleGroupMode::Multiple,
+                                            orientation: ToggleGroupOrientation::Horizontal,
+                                            on_value_change: {
+                                                let mut setter = toggle_group_setter.clone();
+                                                move |values| setter.set(values)
+                                            },
+                                            ToggleGroupItem { value: "daily".to_string(), "Daily" }
+                                            ToggleGroupItem { value: "weekly".to_string(), "Weekly" }
+                                            ToggleGroupItem { value: "monthly".to_string(), "Monthly" }
+                                        }
+                                        FormMessage {
+                                            variant: FormMessageVariant::Helper,
+                                            class: Some("ui-field-helper".to_string()),
+                                            "{toggle_group_summary()}"
+                                        }
+                                    }
+                                    DateRangePicker {
+                                        value: date_range_signal.clone(),
+                                        on_change: {
+                                            let mut setter = date_range_setter.clone();
+                                            move |range| setter.set(range)
+                                        },
+                                        initial_month: Some(NaiveDate::from_ymd_opt(2024, 6, 1).expect("valid month")),
+                                    }
+                                    FormMessage {
+                                        variant: FormMessageVariant::Helper,
+                                        class: Some("ui-field-helper".to_string()),
+                                        "{range_preview()}"
                                     }
                                 }
                             }
