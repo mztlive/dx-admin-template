@@ -1,15 +1,19 @@
 use crate::components::ui::{
     Accordion, AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertVariant, Avatar,
-    Badge, BadgeVariant, Breadcrumb, Button, ButtonSize, ButtonVariant, Card, CardContent,
-    CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, CommandItem, CommandPalette,
-    ContextItem, ContextMenu, Crumb, Dialog, DropdownMenu, DropdownMenuItem, HoverCard, Input,
+    Badge, BadgeVariant, Breadcrumb, Button, ButtonSize, ButtonVariant, Calendar, Card,
+    CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, Combobox,
+    ComboboxOption, CommandItem, CommandPalette, ContextItem, ContextMenu, Crumb, Dialog,
+    DropdownMenu, DropdownMenuItem, FormField, FormMessage, FormMessageVariant, HoverCard, Input,
     Label, Menubar, MenubarItem, MenubarMenu, NavigationItem, NavigationMenu, Pagination, Popover,
-    Progress, RadioGroup, RadioGroupItem, Select, SelectOption, Separator, SeparatorOrientation,
-    Sheet, SheetSide, Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
-    SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout, SidebarMenu, SidebarMenuButton,
-    SidebarMenuItem, SidebarSeparator, SidebarTrigger, Slider, StepItem, Steps, Switch, Tabs,
-    TabsContent, TabsList, TabsTrigger, Textarea, Toast, ToastViewport, Tooltip,
+    Progress, RadioGroup, RadioGroupItem, ScrollArea, Select, SelectOption, Separator,
+    SeparatorOrientation, Sheet, SheetSide, Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
+    SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout,
+    SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator, SidebarTrigger, Skeleton,
+    Slider, StepItem, Steps, Switch, Table, TableBody, TableCaption, TableCell, TableFooter,
+    TableHead, TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, Toast,
+    ToastViewport, Toggle, Tooltip,
 };
+use chrono::NaiveDate;
 use dioxus::prelude::*;
 
 #[component]
@@ -46,6 +50,13 @@ fn UiShowcase() -> Element {
     let toast_open = use_signal(|| false);
     let sidebar_collapsed = use_signal(|| false);
     let sidebar_active = use_signal(|| "analytics".to_string());
+    let profile_name = use_signal(|| "".to_string());
+    let name_error =
+        use_signal(|| Some("Use at least 3 characters to stay descriptive.".to_string()));
+    let combobox_selection = use_signal(|| Some("analytics".to_string()));
+    let toggle_active = use_signal(|| true);
+    let calendar_selection =
+        use_signal(|| Some(NaiveDate::from_ymd_opt(2024, 6, 11).expect("valid date")));
     let slider_value_signal = slider_value.clone();
     let slider_value_setter = slider_value.clone();
     let contact_method_signal = contact_method.clone();
@@ -67,12 +78,62 @@ fn UiShowcase() -> Element {
     let toast_signal = toast_open.clone();
     let sidebar_collapsed_setter = sidebar_collapsed.clone();
     let sidebar_active_setter = sidebar_active.clone();
+    let profile_name_signal = profile_name.clone();
+    let profile_name_setter = profile_name.clone();
+    let name_error_signal = name_error.clone();
+    let name_error_setter = name_error.clone();
+    let combobox_selection_signal = combobox_selection.clone();
+    let combobox_selection_setter = combobox_selection.clone();
+    let toggle_active_signal = toggle_active.clone();
+    let toggle_active_setter = toggle_active.clone();
+    let calendar_selection_signal = calendar_selection.clone();
+    let calendar_selection_setter = calendar_selection.clone();
     let intensity_text = move || format!("Accent intensity: {:.0}%", slider_value_signal());
     let contact_text = move || format!("Preferred contact: {}", contact_method_signal());
+    let profile_preview = move || {
+        let value = profile_name_signal();
+        if value.trim().is_empty() {
+            "Name is currently empty".to_string()
+        } else {
+            format!("Display name preview: {}", value.trim())
+        }
+    };
+    let combobox_summary = move || {
+        if let Some(value) = combobox_selection_signal() {
+            format!("Project owner: {value}")
+        } else {
+            "Assign a project owner to sync permissions.".to_string()
+        }
+    };
+    let calendar_summary = move || {
+        if let Some(date) = calendar_selection_signal() {
+            format!("Next milestone: {}", date.format("%b %d, %Y"))
+        } else {
+            "Pick a date to keep the timeline on track.".to_string()
+        }
+    };
+    let toggle_summary = move || {
+        if toggle_active_signal() {
+            "Emails are enabled for this workflow.".to_string()
+        } else {
+            "Emails are paused until you re-enable them.".to_string()
+        }
+    };
     let select_options = vec![
         SelectOption::new("System", "system"),
         SelectOption::new("Light", "light"),
         SelectOption::new("Dark", "dark"),
+    ];
+    let calendar_month = NaiveDate::from_ymd_opt(2024, 6, 1).expect("valid date");
+    let combobox_options = vec![
+        ComboboxOption::new("Analytics", "analytics")
+            .with_description("Dashboards, funnels, and trend alerts"),
+        ComboboxOption::new("Growth", "growth")
+            .with_description("Lifecycle campaigns and experiments"),
+        ComboboxOption::new("Infrastructure", "infrastructure")
+            .with_description("Runtime, deploys, and observability"),
+        ComboboxOption::new("Support", "support")
+            .with_description("Queues, macros, and response goals"),
     ];
     let menu_items = vec![
         DropdownMenuItem::new("Profile", "profile").with_shortcut("⌘P"),
@@ -101,6 +162,26 @@ fn UiShowcase() -> Element {
             "https://dioxuslabs.com/learn",
             Some("Dive into the latest Dioxus 0.7 docs"),
         ),
+    ];
+    let table_rows = vec![
+        ("DW-9021", "Realtime dashboard", "Shipping", "2 minutes ago"),
+        (
+            "DB-1740",
+            "AI campaign assistant",
+            "Review",
+            "14 minutes ago",
+        ),
+        ("MR-1183", "Metrics service", "Building", "38 minutes ago"),
+        ("PK-9422", "Payments ledger", "Queued", "58 minutes ago"),
+        ("XD-7710", "Access gateway", "Paused", "2 hours ago"),
+    ];
+    let activity_items = vec![
+        ("09:05", "Jesse", "merged \"navigation cleanups\" into main"),
+        ("10:18", "Mia", "scheduled the weekly metrics export"),
+        ("11:42", "Arjun", "paused the experiment \"Pricing v2\""),
+        ("12:03", "Ivy", "restarted the realtime analytics workers"),
+        ("12:44", "Kai", "commented on the onboarding funnel deck"),
+        ("13:27", "Lena", "acknowledged alert \"Queue depth\""),
     ];
     let menubar_menus = vec![
         MenubarMenu::new(
@@ -285,6 +366,87 @@ fn UiShowcase() -> Element {
                         style: single_column_style,
                         Card {
                             CardHeader {
+                                CardTitle { "Form helpers" }
+                                CardDescription { "FormField, Combobox, and Toggle wire up validation with shadcn styling." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    FormField {
+                                        id: Some("helper-name".to_string()),
+                                        label: Some("Project name".to_string()),
+                                        helper_text: Some(profile_preview()),
+                                        error: Some(name_error_signal),
+                                        Input {
+                                            id: "helper-name",
+                                            placeholder: "Launch analytics workspace",
+                                            value: profile_name_signal(),
+                                            on_input: {
+                                                let mut value_signal = profile_name_setter.clone();
+                                                let mut error_signal = name_error_setter.clone();
+                                                move |event: FormEvent| {
+                                                    let value = event.value();
+                                                    let trimmed_len = value.trim().len();
+                                                    value_signal.set(value.clone());
+                                                    if trimmed_len >= 3 {
+                                                        error_signal.set(None);
+                                                    } else {
+                                                        error_signal.set(Some("Use at least 3 characters to stay descriptive.".to_string()));
+                                                    }
+                                                }
+                                            },
+                                        }
+                                    }
+                                    FormField {
+                                        id: Some("helper-brief".to_string()),
+                                        label: Some("Summary".to_string()),
+                                        description: Some("Share quick context for the owners reviewing this request.".to_string()),
+                                        helper_text: Some("You can mention teammates with @ and use Markdown formatting.".to_string()),
+                                        Textarea {
+                                            id: "helper-brief",
+                                            placeholder: "Outline the goal, stakeholders, and success signal...",
+                                            rows: 4,
+                                        }
+                                    }
+                                    FormField {
+                                        id: Some("owner-combobox".to_string()),
+                                        label: Some("Assign owner".to_string()),
+                                        description: Some("Search across teams to hand off this initiative.".to_string()),
+                                        helper_text: Some(combobox_summary()),
+                                        Combobox {
+                                            id: Some("owner-combobox".to_string()),
+                                            placeholder: "Search by team...",
+                                            options: combobox_options.clone(),
+                                            selected: combobox_selection_signal(),
+                                            on_select: {
+                                                let mut setter = combobox_selection_setter.clone();
+                                                move |value| setter.set(Some(value))
+                                            },
+                                        }
+                                    }
+                                    div { class: "ui-stack",
+                                        Toggle {
+                                            pressed: toggle_active_signal(),
+                                            on_pressed_change: {
+                                                let mut setter = toggle_active_setter.clone();
+                                                move |state| setter.set(state)
+                                            },
+                                            "Email alerts"
+                                        }
+                                        FormMessage {
+                                            variant: FormMessageVariant::Helper,
+                                            class: Some("ui-field-helper".to_string()),
+                                            "{toggle_summary()}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div {
+                        style: single_column_style,
+                        Card {
+                            CardHeader {
                                 CardTitle { "Buttons & badges" }
                                 CardDescription { "Variant + size matrix copied directly from shadcn/ui." }
                             }
@@ -366,6 +528,89 @@ fn UiShowcase() -> Element {
                                             size: ButtonSize::Sm,
                                             "Hover me"
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    div {
+                        style: full_width_style,
+                        Card {
+                            CardHeader {
+                                CardTitle { "Data timelines" }
+                                CardDescription { "Tables, scroll areas, calendars, and skeleton loaders keep admin dashboards responsive." }
+                            }
+                            CardContent {
+                                div { class: "ui-stack",
+                                    SpanHelper { "Deploys" }
+                                    ScrollArea {
+                                        max_height: Some("220px".to_string()),
+                                        Table {
+                                            TableCaption { "Latest updates from the delivery pipeline." }
+                                            TableHeader {
+                                                TableRow {
+                                                    TableHead { "ID" }
+                                                    TableHead { "Project" }
+                                                    TableHead { "Status" }
+                                                    TableHead { "Updated" }
+                                                }
+                                            }
+                                            TableBody {
+                                                for (id, name, status, updated) in table_rows.iter().copied() {
+                                                    TableRow {
+                                                        TableCell { "{id}" }
+                                                        TableCell { "{name}" }
+                                                        TableCell { "{status}" }
+                                                        TableCell { "{updated}" }
+                                                    }
+                                                }
+                                            }
+                                            TableFooter {
+                                                TableRow {
+                                                    TableCell { "Total" }
+                                                    TableCell { "{table_rows.len()} pipelines" }
+                                                    TableCell { class: Some("ui-field-helper".to_string()), "Automated checks" }
+                                                    TableCell { class: Some("ui-field-helper".to_string()), "Past hour" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    FormMessage {
+                                        variant: FormMessageVariant::Helper,
+                                        class: Some("ui-field-helper".to_string()),
+                                        "Keep automation quick by streaming the hottest rows into view."
+                                    }
+                                    Separator { style: "margin: 1rem 0;" }
+                                    SpanHelper { "Activity feed" }
+                                    ScrollArea {
+                                        max_height: Some("140px".to_string()),
+                                        ul {
+                                            style: "display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem;",
+                                            for (time, author, action) in activity_items.iter().copied() {
+                                                li {
+                                                    style: "display: flex; gap: 0.5rem; align-items: baseline;",
+                                                    span { style: "font-weight: 600; font-variant-numeric: tabular-nums;", "{time}" }
+                                                    span { style: "font-weight: 600;", "{author}" }
+                                                    span { style: "color: hsl(var(--muted-foreground));", "{action}" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Separator { style: "margin: 1rem 0;" }
+                                    SpanHelper { "{calendar_summary()}" }
+                                    Calendar {
+                                        initial_month: calendar_month,
+                                        selected: calendar_selection_signal(),
+                                        on_select: {
+                                            let mut setter = calendar_selection_setter.clone();
+                                            move |day| setter.set(Some(day))
+                                        },
+                                    }
+                                    div { class: "ui-cluster",
+                                        Skeleton { width: Some("160px".to_string()), height: Some("1rem".to_string()) }
+                                        Skeleton { width: Some("120px".to_string()), height: Some("1rem".to_string()) }
+                                        Skeleton { width: Some("200px".to_string()), height: Some("1rem".to_string()) }
                                     }
                                 }
                             }

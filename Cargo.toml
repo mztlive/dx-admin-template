@@ -9,6 +9,7 @@ edition = "2021"
 [dependencies]
 dioxus = { version = "0.7.0", features = ["router", "fullstack"] }
 dioxus-motion = "0.3.1"
+chrono = { version = "0.4", default-features = false, features = ["std"] }
 
 [features]
 default = ["web"]

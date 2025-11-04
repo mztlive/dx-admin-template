@@ -1871,6 +1871,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 name = "dx-admin-template"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "dioxus 0.7.0",
  "dioxus-motion",
 ]
