@@ -32,3 +32,9 @@ To run for a different platform, use the `--platform platform` flag. E.g.
 dx serve --platform desktop
 ```
 
+### UI 组件文档
+
+`src/components/ui` 提供了一套基于 Dioxus 0.7 的 shadcn 风格组件：
+
+- 扩展指南见 `src/components/ui/README.md`
+- 使用示例与 props 说明见 `src/components/ui/USAGE.md`
