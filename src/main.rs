@@ -2,7 +2,7 @@
 // need dioxus
 use dioxus::prelude::*;
 
-use views::{Components, Home, Navbar};
+use views::{Components, Home, Navbar, Orders};
 
 /// Define a components module that contains all shared components for our app.
 mod components;
@@ -27,6 +27,8 @@ enum Route {
         #[route("/components")]
         // The components gallery reuses the full UI showcase so new primitives stay discoverable.
         Components {},
+        #[route("/orders")]
+        Orders {},
 }
 
 // We can import assets in dioxus with the `asset!` macro. This macro takes a path to an asset relative to the crate root.

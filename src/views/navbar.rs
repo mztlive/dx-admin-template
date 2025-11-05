@@ -1,9 +1,8 @@
 use crate::{
     components::ui::{
-        Avatar, Button, ButtonSize, ButtonVariant, Sidebar, SidebarContent, SidebarFooter,
-        SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset,
-        SidebarLayout, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail,
-        SidebarSeparator,
+        Button, ButtonSize, ButtonVariant, Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
+        SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarLayout,
+        SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail, SidebarSeparator,
     },
     Route,
 };
@@ -13,6 +12,7 @@ fn page_title(route: &Route) -> &'static str {
     match route {
         Route::Home {} => "Dashboard overview",
         Route::Components {} => "Component library",
+        Route::Orders {} => "Order management",
     }
 }
 
@@ -29,6 +29,7 @@ pub fn Navbar() -> Element {
     let _title = page_title(&current_route);
     let is_dashboard = matches!(current_route, Route::Home { .. });
     let is_components = matches!(current_route, Route::Components { .. });
+    let is_orders = matches!(current_route, Route::Orders { .. });
 
     let theme_label = {
         let is_dark = is_dark.clone();
@@ -70,6 +71,15 @@ pub fn Navbar() -> Element {
                                             icon: Some("📊".to_string()),
                                             active: is_dashboard,
                                             href: Some(Route::Home {}.to_string()),
+                                        }
+                                    }
+                                    SidebarMenuItem {
+                                        SidebarMenuButton {
+                                            label: "Orders",
+                                            description: Some("Manage filters and fulfillment queues".to_string()),
+                                            icon: Some("🧾".to_string()),
+                                            active: is_orders,
+                                            href: Some(Route::Orders {}.to_string()),
                                         }
                                     }
                                     SidebarMenuItem {

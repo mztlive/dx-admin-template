@@ -907,6 +907,57 @@ fn TableSample() -> Element {
 }
 ```
 
+`InteractiveTable` 在基础结构上封装了行多选与列显隐控制：
+
+- `columns: Vec<TableColumnConfig>` 定义列元数据，`fixed()` 列不可隐藏，`hide_by_default()` 默认隐藏。
+- `rows: Vec<TableRowData>` 通过 `from_pairs` 或 `with_cell` 构造行数据，`id` 必须唯一。
+- `on_selection_change` / `on_visibility_change` 回调分别返回当前选中的行 ID 和可见列 ID（按定义顺序）。
+- `default_selected` 设置初始选中行，`empty_state` 自定义空数据提示。
+
+```rust
+use crate::components::ui::*;
+use dioxus::prelude::*;
+
+#[component]
+fn InteractiveTableSample() -> Element {
+    let columns = vec![
+        TableColumnConfig::new("id", "ID").fixed(),
+        TableColumnConfig::new("project", "项目"),
+        TableColumnConfig::new("status", "状态"),
+        TableColumnConfig::new("updated", "更新时间"),
+    ];
+
+    let rows = vec![
+        TableRowData::from_pairs(
+            "1",
+            [
+                ("project", "Alpha"),
+                ("status", "部署中"),
+                ("updated", "2024-06-12"),
+            ],
+        ),
+        TableRowData::from_pairs(
+            "2",
+            [
+                ("project", "Beta"),
+                ("status", "通过"),
+                ("updated", "2024-06-10"),
+            ],
+        ),
+    ];
+
+    rsx! {
+        InteractiveTable {
+            columns,
+            rows,
+            default_selected: Some(vec!["1".to_string()]),
+            on_selection_change: move |ids| log::info!("选中: {ids:?}"),
+            on_visibility_change: move |cols| log::info!("可见列: {cols:?}"),
+        }
+    }
+}
+```
+
 ### Calendar
 
 单月日期选择器。

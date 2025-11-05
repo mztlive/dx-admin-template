@@ -10,9 +10,11 @@
 
 mod components;
 mod home;
+mod orders;
 
 pub use components::Components;
 pub use home::Home;
+pub use orders::Orders;
 
 mod navbar;
 pub use navbar::Navbar;
