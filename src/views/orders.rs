@@ -1,8 +1,8 @@
 use crate::components::ui::{
     Avatar, Badge, BadgeVariant, Button, ButtonSize, ButtonVariant, Card, CardContent,
     CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, DateRange, DateRangePicker,
-    Input, Label, Pagination, Select, SelectOption, Slider, Switch, Table, TableBody, TableCell,
-    TableHead, TableHeader, TableRow, ToggleGroup, ToggleGroupItem, ToggleGroupMode,
+    Input, Label, Pagination, Popover, Select, SelectOption, Slider, Switch, Table, TableBody,
+    TableCell, TableHead, TableHeader, TableRow, ToggleGroup, ToggleGroupItem, ToggleGroupMode,
 };
 use chrono::NaiveDate;
 use dioxus::prelude::*;
@@ -551,6 +551,23 @@ pub fn Orders() -> Element {
     let min_total_value = min_total();
     let flagged_only_value = flagged_only();
     let date_range_selected = date_range();
+    let date_range_label = date_range_selected
+        .map(|range| {
+            let start = range.start.format("%Y-%m-%d");
+            let end = range.end.format("%Y-%m-%d");
+            if range.start == range.end {
+                format!("{}", start)
+            } else {
+                format!("{} → {}", start, end)
+            }
+        })
+        .unwrap_or_else(|| "选择日期范围".to_string());
+    let date_range_helper = date_range_selected
+        .map(|range| {
+            let span = (range.end - range.start).num_days().abs() + 1;
+            format!("覆盖 {} 天，点击可修改", span)
+        })
+        .unwrap_or_else(|| "未限制下单日期".to_string());
     let pipeline_values = pipeline();
     let pipeline_value = pipeline_values
         .first()
@@ -822,13 +839,40 @@ pub fn Orders() -> Element {
                         }
                         div { class: "ui-stack", style: "gap: 0.5rem;",
                             Label { "下单日期" }
-                            DateRangePicker {
-                                value: date_range.clone(),
-                                on_change: {
-                                    let mut setter = date_range.clone();
-                                    move |range: Option<DateRange>| setter.set(range)
+                            Popover {
+                                placement: "bottom".to_string(),
+                                trigger: rsx! {
+                                    button {
+                                        class: "orders-date-trigger",
+                                        r#type: "button",
+                                        span { class: "orders-date-trigger-text", "{date_range_label}" }
+                                        span { class: "orders-date-trigger-icon", "📅" }
+                                    }
+                                },
+                                content: rsx! {
+                                    div { class: "orders-date-popover",
+                                        DateRangePicker {
+                                            value: date_range.clone(),
+                                            on_change: {
+                                                let mut setter = date_range.clone();
+                                                move |range: Option<DateRange>| setter.set(range)
+                                            },
+                                        }
+                                        div { class: "orders-date-actions",
+                                            Button {
+                                                variant: ButtonVariant::Ghost,
+                                                size: ButtonSize::Sm,
+                                                on_click: {
+                                                    let mut setter = date_range.clone();
+                                                    move |_| setter.set(None)
+                                                },
+                                                "清除日期"
+                                            }
+                                        }
+                                    }
                                 },
                             }
+                            span { class: "ui-field-helper", "{date_range_helper}" }
                         }
                         div { class: "ui-stack", style: "gap: 0.5rem;",
                             Label { "订单金额 (¥)" }

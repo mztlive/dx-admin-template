@@ -1376,7 +1376,8 @@
 .ui-date-range-calendars {
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    min-width: 460px;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
 }
 
 .ui-date-range-calendars > .ui-date-range-calendar {

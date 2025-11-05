@@ -44,10 +44,25 @@ pub fn Select(
         div {
             class: "ui-select",
             "data-disabled": disabled,
-            onfocusout: {
-                let mut signal = open.clone();
-                move |_| signal.set(false)
-            },
+            if open() {
+                div {
+                    style: "position: fixed; inset: 0; z-index: 20; background: transparent;",
+                    onmousedown: {
+                        let mut open_signal = open.clone();
+                        move |event| {
+                            event.stop_propagation();
+                            open_signal.set(false);
+                        }
+                    },
+                    ontouchstart: {
+                        let mut open_signal = open.clone();
+                        move |event| {
+                            event.stop_propagation();
+                            open_signal.set(false);
+                        }
+                    },
+                }
+            }
             button {
                 class: "ui-select-trigger",
                 "data-open": if open() { "true" } else { "false" },
