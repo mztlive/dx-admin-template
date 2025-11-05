@@ -65,6 +65,7 @@ pub fn Button(
     #[props(default)] size: ButtonSize,
     #[props(into, default)] class: Option<String>,
     #[props(default)] disabled: bool,
+    #[props(default)] loading: bool,
     #[props(default = "button".to_string())]
     #[props(into)]
     r#type: String,
@@ -78,20 +79,36 @@ pub fn Button(
     }
 
     let click_handler = on_click.clone();
+    let is_disabled = disabled || loading;
 
     rsx! {
         button {
             class: classes,
-            disabled,
+            disabled: is_disabled,
             r#type: r#type,
             "data-variant": variant.as_str(),
             "data-size": size.as_str(),
+            "data-loading": if loading { "true" } else { "false" },
+            "aria-busy": if loading { "true" } else { "false" },
             onclick: move |event| {
+                if loading {
+                    event.stop_propagation();
+                    return;
+                }
                 if let Some(handler) = click_handler.clone() {
                     handler.call(event);
                 }
             },
-            {children}
+            if loading {
+                span {
+                    class: "ui-button-spinner",
+                    "aria-hidden": "true",
+                }
+            }
+            span {
+                class: "ui-button-content",
+                {children}
+            }
         }
     }
 }
