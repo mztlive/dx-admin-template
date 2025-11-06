@@ -24,7 +24,7 @@ pub fn Select(
     #[props(default)] disabled: bool,
     #[props(optional)] on_change: Option<EventHandler<String>>,
 ) -> Element {
-    let open = use_signal(|| false);
+    let mut open = use_signal(|| false);
     let current = use_signal(move || selected.clone());
     let on_change_handler = on_change.clone();
     let trigger_id = id.unwrap_or_default();
@@ -44,25 +44,9 @@ pub fn Select(
         div {
             class: "ui-select",
             "data-disabled": disabled,
-            if open() {
-                div {
-                    style: "position: fixed; inset: 0; z-index: 20; background: transparent;",
-                    onmousedown: {
-                        let mut open_signal = open.clone();
-                        move |event| {
-                            event.stop_propagation();
-                            open_signal.set(false);
-                        }
-                    },
-                    ontouchstart: {
-                        let mut open_signal = open.clone();
-                        move |event| {
-                            event.stop_propagation();
-                            open_signal.set(false);
-                        }
-                    },
-                }
-            }
+            onclick: move |event| {
+                event.stop_propagation();
+            },
             button {
                 class: "ui-select-trigger",
                 "data-open": if open() { "true" } else { "false" },
@@ -88,6 +72,9 @@ pub fn Select(
             if open() {
                 div {
                     class: "ui-select-content",
+                    onclick: move |event| {
+                        event.stop_propagation();
+                    },
                     div {
                         class: "ui-select-list",
                         for option in options.iter().cloned() {
