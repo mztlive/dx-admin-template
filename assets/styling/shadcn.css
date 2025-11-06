@@ -432,6 +432,89 @@
     gap: 0.75rem;
 }
 
+.ui-radio-chip-group,
+.ui-checkbox-chip-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.ui-choice-group-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    white-space: nowrap;
+}
+
+.ui-choice-group-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ui-radio-chip,
+.ui-checkbox-chip {
+    appearance: none;
+    background-color: hsl(var(--background));
+    border: 1px dashed hsl(var(--border));
+    border-radius: 0.65rem;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    justify-content: center;
+    min-height: 2.2rem;
+    min-width: 3.5rem;
+    padding: 0.45rem 1.1rem;
+    position: relative;
+    text-align: center;
+    transition:
+        border-color 0.2s ease,
+        color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.ui-radio-chip:hover:not([data-disabled="true"]),
+.ui-checkbox-chip:hover:not([data-disabled="true"]) {
+    border-color: hsl(var(--foreground) / 0.6);
+    color: hsl(var(--foreground));
+}
+
+.ui-radio-chip[data-state="selected"],
+.ui-checkbox-chip[data-state="selected"] {
+    border: 1px solid hsl(var(--foreground));
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--background));
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.2);
+}
+
+.ui-radio-chip[data-disabled="true"],
+.ui-checkbox-chip[data-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.ui-radio-chip:focus-visible,
+.ui-checkbox-chip:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px hsl(var(--background)),
+        0 0 0 4px hsl(var(--ring) / 0.45);
+}
+
+.ui-chip-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.ui-chip-description {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+}
+
 .ui-switch {
     appearance: none;
     background-color: hsl(var(--muted));

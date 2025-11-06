@@ -103,3 +103,115 @@ pub fn RadioGroupItem(
         }
     }
 }
+
+#[derive(Clone, PartialEq)]
+pub struct RadioChipOption {
+    pub label: String,
+    pub value: String,
+    pub description: Option<String>,
+    pub disabled: bool,
+}
+
+impl RadioChipOption {
+    pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            value: value.into(),
+            description: None,
+            disabled: false,
+        }
+    }
+
+    pub fn with_description(mut self, description: impl Into<String>) -> Self {
+        self.description = Some(description.into());
+        self
+    }
+
+    pub fn disabled(mut self) -> Self {
+        self.disabled = true;
+        self
+    }
+}
+
+#[component]
+pub fn RadioChipGroup(
+    mut value: Signal<Option<String>>,
+    #[props(into)] options: Vec<RadioChipOption>,
+    #[props(into, default)] label: Option<String>,
+    #[props(default)] disabled: bool,
+    #[props(into, default)] class: Option<String>,
+    #[props(optional)] on_value_change: Option<EventHandler<String>>,
+) -> Element {
+    let classes = merge_class("ui-radio-chip-group", class);
+    let current_value = value();
+    let group_disabled = disabled;
+
+    rsx! {
+        div {
+            class: classes,
+            role: "radiogroup",
+            "aria-disabled": group_disabled,
+            if let Some(label_text) = label.clone() {
+                span {
+                    class: "ui-choice-group-label",
+                    "{label_text}"
+                }
+            }
+            div {
+                class: "ui-choice-group-options",
+                for option in options.iter().cloned() {
+                    {
+                        let option_label = option.label.clone();
+                        let option_value = option.value.clone();
+                        let option_description = option.description.clone();
+                        let is_disabled = group_disabled || option.disabled;
+                        let is_selected = current_value
+                            .as_ref()
+                            .map(|selected| selected == &option_value)
+                            .unwrap_or(false);
+                        let mut value_signal = value.clone();
+                        let handler = on_value_change.clone();
+
+                        rsx! {
+                            button {
+                                class: "ui-radio-chip",
+                                "data-state": if is_selected { "selected" } else { "idle" },
+                                "data-disabled": is_disabled,
+                                role: "radio",
+                                "aria-checked": if is_selected { "true" } else { "false" },
+                                "aria-disabled": if is_disabled { "true" } else { "false" },
+                                r#type: "button",
+                                disabled: is_disabled,
+                                onclick: move |_| {
+                                    if is_disabled {
+                                        return;
+                                    }
+                                    let already_selected = value_signal()
+                                        .as_ref()
+                                        .map(|selected| selected == &option_value)
+                                        .unwrap_or(false);
+                                    if !already_selected {
+                                        value_signal.set(Some(option_value.clone()));
+                                        if let Some(callback) = handler.clone() {
+                                            callback.call(option_value.clone());
+                                        }
+                                    }
+                                },
+                                span {
+                                    class: "ui-chip-label",
+                                    "{option_label}"
+                                }
+                                if let Some(description) = option_description.clone() {
+                                    span {
+                                        class: "ui-chip-description",
+                                        "{description}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

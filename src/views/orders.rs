@@ -1,12 +1,12 @@
 use crate::components::ui::{
     Avatar, Badge, BadgeVariant, Button, ButtonSize, ButtonVariant, Card, CardContent,
-    CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, DateRange, DateRangePicker,
-    Input, Label, Pagination, Popover, Select, SelectOption, Slider, Switch, Table, TableBody,
-    TableCell, TableHead, TableHeader, TableRow, ToggleGroup, ToggleGroupItem, ToggleGroupMode,
+    CardDescription, CardFooter, CardHeader, CardTitle, CheckboxChipGroup, CheckboxChipOption,
+    DateRange, DateRangePicker, Input, Label, Pagination, Popover, Select, SelectOption, Slider,
+    Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, ToggleGroup,
+    ToggleGroupItem, ToggleGroupMode,
 };
 use chrono::NaiveDate;
 use dioxus::prelude::*;
-use std::collections::HashSet;
 
 const PAGE_SIZE: usize = 8;
 const AVAILABLE_TAGS: &[&str] = &["加急", "赠品", "VIP", "缺货", "重复下单", "需回访"];
@@ -499,7 +499,7 @@ pub fn Orders() -> Element {
     let fulfillment_filter = use_signal(|| None::<FulfillmentStatus>);
     let channel_filter = use_signal(|| None::<SalesChannel>);
     let method_filter = use_signal(|| None::<PaymentMethod>);
-    let tags_filter = use_signal(|| HashSet::<String>::new());
+    let tags_filter = use_signal(|| Vec::<String>::new());
     let min_total = use_signal(|| 0.0f32);
     let flagged_only = use_signal(|| false);
     let date_range = use_signal(|| None::<DateRange>);
@@ -546,8 +546,8 @@ pub fn Orders() -> Element {
     let fulfillment_selected = fulfillment_filter();
     let channel_selected = channel_filter();
     let method_selected = method_filter();
-    let tag_filter_set = tags_filter();
-    let active_tag_count = tag_filter_set.len();
+    let selected_tags = tags_filter();
+    let active_tag_count = selected_tags.len();
     let min_total_value = min_total();
     let flagged_only_value = flagged_only();
     let date_range_selected = date_range();
@@ -573,6 +573,10 @@ pub fn Orders() -> Element {
         .first()
         .cloned()
         .unwrap_or_else(|| "all".to_string());
+    let tag_chip_options: Vec<CheckboxChipOption> = AVAILABLE_TAGS
+        .iter()
+        .map(|tag| CheckboxChipOption::new(*tag, *tag))
+        .collect();
 
     let filtered: Vec<Order> = all_orders
         .iter()
@@ -609,10 +613,10 @@ pub fn Orders() -> Element {
                 .map(|expected| order.payment_method == expected)
                 .unwrap_or(true);
 
-            let matches_tags = if tag_filter_set.is_empty() {
+            let matches_tags = if selected_tags.is_empty() {
                 true
             } else {
-                tag_filter_set
+                selected_tags
                     .iter()
                     .all(|tag| order.tags.iter().any(|candidate| candidate == tag))
             };
@@ -889,35 +893,10 @@ pub fn Orders() -> Element {
                             span { class: "ui-field-helper", {format!("最低金额：¥{}", min_total_value as i32)} }
                         }
                         div { class: "ui-stack orders-filter-wide", style: "gap: 0.5rem;",
-                            Label { "标签" }
-                            div { class: "orders-tag-cloud",
-                                for tag in AVAILABLE_TAGS.iter() {
-                                    {
-                                        let tag_value = tag.to_string();
-                                        let is_checked = tag_filter_set.contains(*tag);
-                                        rsx! {
-                                            label { style: "display: inline-flex; align-items: center; gap: 0.4rem;",
-                                                Checkbox {
-                                                    checked: is_checked,
-                                                    on_checked_change: {
-                                                        let mut setter = tags_filter.clone();
-                                                        let tag_value = tag_value.clone();
-                                                        move |checked: bool| {
-                                                            setter.with_mut(|tags| {
-                                                                if checked {
-                                                                    tags.insert(tag_value.clone());
-                                                                } else {
-                                                                    tags.remove(&tag_value);
-                                                                }
-                                                            });
-                                                        }
-                                                    },
-                                                }
-                                                span { "{tag}" }
-                                            }
-                                        }
-                                    }
-                                }
+                            CheckboxChipGroup {
+                                label: "标签",
+                                values: tags_filter.clone(),
+                                options: tag_chip_options.clone(),
                             }
                             span { class: "ui-field-helper", {format!("已选标签：{}", active_tag_count)} }
                         }
@@ -961,7 +940,7 @@ pub fn Orders() -> Element {
                                     setter_fulfillment.set(None);
                                     setter_channel.set(None);
                                     setter_method.set(None);
-                                    setter_tags.set(HashSet::new());
+                                    setter_tags.set(Vec::new());
                                     setter_range.set(None);
                                     setter_min_total.set(0.0);
                                     setter_flagged.set(false);

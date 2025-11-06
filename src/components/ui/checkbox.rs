@@ -56,3 +56,112 @@ pub fn Checkbox(
         }
     }
 }
+
+#[derive(Clone, PartialEq)]
+pub struct CheckboxChipOption {
+    pub label: String,
+    pub value: String,
+    pub description: Option<String>,
+    pub disabled: bool,
+}
+
+impl CheckboxChipOption {
+    pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            value: value.into(),
+            description: None,
+            disabled: false,
+        }
+    }
+
+    pub fn with_description(mut self, description: impl Into<String>) -> Self {
+        self.description = Some(description.into());
+        self
+    }
+
+    pub fn disabled(mut self) -> Self {
+        self.disabled = true;
+        self
+    }
+}
+
+#[component]
+pub fn CheckboxChipGroup(
+    mut values: Signal<Vec<String>>,
+    #[props(into)] options: Vec<CheckboxChipOption>,
+    #[props(into, default)] label: Option<String>,
+    #[props(default)] disabled: bool,
+    #[props(into, default)] class: Option<String>,
+    #[props(optional)] on_values_change: Option<EventHandler<Vec<String>>>,
+) -> Element {
+    let classes = merge_class("ui-checkbox-chip-group", class);
+    let current_values = values();
+    let group_disabled = disabled;
+
+    rsx! {
+        div {
+            class: classes,
+            role: "group",
+            "aria-disabled": group_disabled,
+            if let Some(label_text) = label.clone() {
+                span {
+                    class: "ui-choice-group-label",
+                    "{label_text}"
+                }
+            }
+            div {
+                class: "ui-choice-group-options",
+                for option in options.iter().cloned() {
+                    {
+                        let option_label = option.label.clone();
+                        let option_value = option.value.clone();
+                        let option_description = option.description.clone();
+                        let is_disabled = group_disabled || option.disabled;
+                        let is_selected = current_values.iter().any(|item| item == &option_value);
+                        let mut values_signal = values.clone();
+                        let handler = on_values_change.clone();
+
+                        rsx! {
+                            button {
+                                class: "ui-checkbox-chip",
+                                "data-state": if is_selected { "selected" } else { "idle" },
+                                "data-disabled": is_disabled,
+                                role: "checkbox",
+                                "aria-checked": if is_selected { "true" } else { "false" },
+                                "aria-disabled": if is_disabled { "true" } else { "false" },
+                                r#type: "button",
+                                disabled: is_disabled,
+                                onclick: move |_| {
+                                    if is_disabled {
+                                        return;
+                                    }
+                                    values_signal.with_mut(|items| {
+                                        if let Some(index) = items.iter().position(|item| item == &option_value) {
+                                            items.remove(index);
+                                        } else {
+                                            items.push(option_value.clone());
+                                        }
+                                    });
+                                    if let Some(callback) = handler.clone() {
+                                        callback.call(values_signal());
+                                    }
+                                },
+                                span {
+                                    class: "ui-chip-label",
+                                    "{option_label}"
+                                }
+                                if let Some(description) = option_description.clone() {
+                                    span {
+                                        class: "ui-chip-description",
+                                        "{description}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
