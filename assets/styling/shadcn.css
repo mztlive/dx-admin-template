@@ -19,11 +19,10 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --ring: 215 20.2% 65.1%;
-    --radius: 0.5rem;
+    --radius: 0.3rem;
     --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
     --shadow-md:
-        0 4px 6px -1px rgb(15 23 42 / 0.1),
-        0 2px 4px -2px rgb(15 23 42 / 0.1);
+        0 4px 6px -1px rgb(15 23 42 / 0.1), 0 2px 4px -2px rgb(15 23 42 / 0.1);
 }
 
 .dark,
@@ -203,7 +202,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.35rem;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
         transform 0.2s ease;
 }
 

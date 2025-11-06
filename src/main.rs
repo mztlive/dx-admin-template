@@ -38,6 +38,7 @@ const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
 const SHADCN_CSS: Asset = asset!("/assets/styling/shadcn.css");
 const ADMIN_CSS: Asset = asset!("/assets/styling/admin.css");
+const ORDERS_CSS: Asset = asset!("/assets/styling/orders.css");
 
 fn main() {
     // The `launch` function is the main entry point for a dioxus app. It takes a component and renders it with the platform feature
@@ -59,6 +60,7 @@ fn App() -> Element {
         document::Link { rel: "stylesheet", href: MAIN_CSS }
         document::Link { rel: "stylesheet", href: SHADCN_CSS }
         document::Link { rel: "stylesheet", href: ADMIN_CSS }
+        document::Link { rel: "stylesheet", href: ORDERS_CSS }
 
 
         // The router component renders the route enum we defined above. It will handle synchronization of the URL and render

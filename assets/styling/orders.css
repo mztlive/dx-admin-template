@@ -1,0 +1,112 @@
+.orders-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+.orders-metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 20px;
+    border-radius: calc(var(--radius));
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--card));
+    box-shadow: var(--shadow-sm);
+}
+
+.orders-metric-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: hsl(var(--muted-foreground));
+}
+
+.orders-metric-value {
+    font-size: 2rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+
+.orders-metric-sub {
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.4;
+}
+
+.orders-filter-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    align-items: start;
+}
+
+.orders-filter-wide {
+    grid-column: 1 / -1;
+}
+
+.orders-tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.orders-date-trigger {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0.55rem 0.9rem;
+    border-radius: calc(var(--radius) - 1px);
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    box-shadow: inset 0 1px 0 hsl(var(--background));
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.orders-date-trigger:hover {
+    border-color: hsl(var(--ring));
+    background-color: hsl(var(--muted));
+}
+
+.orders-date-trigger-text {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.orders-date-trigger-icon {
+    font-size: 0.95rem;
+    opacity: 0.7;
+}
+
+.orders-date-popover {
+    padding: 12px;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.orders-date-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.orders-empty {
+    padding: 60px 20px;
+    text-align: center;
+    border: 1px dashed hsl(var(--border));
+    border-radius: calc(var(--radius));
+    color: hsl(var(--muted-foreground));
+    background-color: hsl(var(--muted) / 0.25);
+}

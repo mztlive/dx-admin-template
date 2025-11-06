@@ -900,19 +900,6 @@ pub fn Orders() -> Element {
                             }
                             span { class: "ui-field-helper", {format!("已选标签：{}", active_tag_count)} }
                         }
-                        div { class: "ui-stack", style: "gap: 0.5rem;",
-                            Label { "重点订单" }
-                            div { class: "ui-cluster", style: "gap: 0.75rem;",
-                                Switch {
-                                    checked: flagged_only_value,
-                                    on_checked_change: {
-                                        let mut setter = flagged_only.clone();
-                                        move |state: bool| setter.set(state)
-                                    },
-                                }
-                                span { "仅查看标记关注的订单" }
-                            }
-                        }
                     }
                 }
                 CardFooter {
