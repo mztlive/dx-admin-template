@@ -105,6 +105,7 @@ pub struct RadioChipOption {
 }
 
 impl RadioChipOption {
+    #[allow(dead_code)]
     pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
         Self {
             label: label.into(),
@@ -114,11 +115,13 @@ impl RadioChipOption {
         }
     }
 
+    #[allow(dead_code)]
     pub fn with_description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self
     }
 
+    #[allow(dead_code)]
     pub fn disabled(mut self) -> Self {
         self.disabled = true;
         self

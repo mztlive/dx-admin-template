@@ -1,5 +1,17 @@
 use dioxus::prelude::*;
 use super::utils::merge_class;
+
+/// Label component for form fields with consistent styling.
+/// 
+/// # Example
+/// ```rust
+/// rsx! {
+///     Label {
+///         r#for: "email",
+///         "Email Address"
+///     }
+/// }
+/// ```
 #[component]
 pub fn Label(
     #[props(into, default)] class: Option<String>,

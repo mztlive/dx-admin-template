@@ -1,5 +1,17 @@
 use dioxus::prelude::*;
 use super::utils::merge_class;
+
+/// A simple wrapper component that maintains a specified aspect ratio for its content.
+/// 
+/// # Example
+/// ```rust
+/// rsx! {
+///     AspectRatio {
+///         ratio: 16.0 / 9.0,
+///         img { src: "/image.jpg" }
+///     }
+/// }
+/// ```
 #[component]
 pub fn AspectRatio(
     #[props(default = 1.0f32)] ratio: f32,

@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use super::utils::merge_class;
+use super::input::Input;
 #[derive(Clone, PartialEq)]
 pub struct ComboboxOption {
     pub label: String,
@@ -139,13 +140,12 @@ fn ComboboxContent(
             class: "ui-combobox-content",
             div {
                 class: "ui-combobox-search",
-                input {
+                Input {
                     class: "ui-combobox-input",
                     placeholder: search_placeholder,
-                    r#type: "text",
                     autofocus: true,
-                    value: "{query()}",
-                    oninput: move |event| query.set(event.value()),
+                    value: query(),
+                    on_input: move |event: FormEvent| query.set(event.value())
                 }
             }
             if filtered_options.is_empty() {

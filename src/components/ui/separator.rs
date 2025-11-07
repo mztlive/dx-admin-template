@@ -1,5 +1,14 @@
 use dioxus::prelude::*;
 use super::utils::merge_class;
+
+/// Horizontal or vertical separator/divider component.
+/// 
+/// # Example
+/// ```rust
+/// rsx! {
+///     Separator { orientation: SeparatorOrientation::Horizontal }
+/// }
+/// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SeparatorOrientation {
     Horizontal,

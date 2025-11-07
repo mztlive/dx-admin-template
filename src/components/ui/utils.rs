@@ -17,6 +17,12 @@ pub fn data_bool(value: bool) -> &'static str {
     }
 }
 
+/// Trait for types that can be converted to a static string representation.
+/// Useful for variant enums that need to be used as CSS classes or data attributes.
+pub trait AsStaticStr {
+    fn as_str(&self) -> &'static str;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

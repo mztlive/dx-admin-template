@@ -1,8 +1,10 @@
 use dioxus::prelude::*;
 use super::utils::merge_class;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TabsOrientation {
     Horizontal,
+    #[allow(dead_code)]
     Vertical,
 }
 

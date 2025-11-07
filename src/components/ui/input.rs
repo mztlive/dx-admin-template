@@ -13,6 +13,7 @@ pub fn Input(
     #[props(default)] disabled: bool,
     #[props(default)] readonly: bool,
     #[props(default)] required: bool,
+    #[props(default)] autofocus: bool,
     #[props(optional)] on_input: Option<EventHandler<FormEvent>>,
     #[props(optional)] on_change: Option<EventHandler<FormEvent>>,
 ) -> Element {
@@ -34,6 +35,7 @@ pub fn Input(
             disabled,
             readonly,
             required,
+            autofocus,
             id: id_attr,
             name: name_attr,
             value: resolved_value,

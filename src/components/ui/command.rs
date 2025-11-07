@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use super::input::Input;
 
 #[derive(Clone, PartialEq)]
 pub struct CommandItem {
@@ -90,11 +91,11 @@ pub fn CommandPalette(
             div {
                 class: "ui-command-header",
                 span { style: "font-size: 0.85rem; opacity: 0.6;", "⌘K" }
-                input {
+                Input {
                     class: "ui-command-input",
                     value: query(),
                     placeholder: placeholder.clone(),
-                    oninput: move |event| query.set(event.value()),
+                    on_input: move |event: FormEvent| query.set(event.value())
                 }
             }
             div {
