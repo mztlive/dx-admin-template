@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use std::rc::Rc;
 
 #[derive(Clone, PartialEq)]
 pub struct SelectOption {
@@ -28,6 +29,17 @@ pub fn Select(
     let current = use_signal(move || selected.clone());
     let on_change_handler = on_change.clone();
     let trigger_id = id.unwrap_or_default();
+    let mut container_ref = use_signal(|| None as Option<Rc<MountedData>>);
+
+    use_effect(move || {
+        if open() {
+            if let Some(container) = container_ref.read().clone() {
+                spawn(async move {
+                    _ = container.set_focus(true).await;
+                });
+            }
+        }
+    });
 
     let selected_value = current();
     let display_text = selected_value
@@ -44,8 +56,15 @@ pub fn Select(
         div {
             class: "ui-select",
             "data-disabled": disabled,
-            onclick: move |event| {
-                event.stop_propagation();
+            tabindex: "-1",
+            onmounted: move |event| {
+                container_ref.set(Some(event.data()));
+            },
+            onblur: {
+                let mut open_signal = open.clone();
+                move |_| {
+                    open_signal.set(false);
+                }
             },
             button {
                 class: "ui-select-trigger",
@@ -84,9 +103,6 @@ pub fn Select(
             if open() {
                 div {
                     class: "ui-select-content",
-                    onclick: move |event| {
-                        event.stop_propagation();
-                    },
                     div {
                         class: "ui-select-list",
                         for option in options.iter().cloned() {
@@ -104,10 +120,11 @@ pub fn Select(
                                     button {
                                         class: "ui-select-item",
                                         "data-state": if is_active { "active" } else { "inactive" },
-                                        onclick: {
+                                        onmousedown: {
                                             let value = value.clone();
                                             let handler = handler.clone();
-                                            move |_| {
+                                            move |event| {
+                                                event.prevent_default();
                                                 current_signal.set(Some(value.clone()));
                                                 if let Some(callback) = handler.clone() {
                                                     callback.call(value.clone());
