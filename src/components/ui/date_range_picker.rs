@@ -283,13 +283,6 @@ pub fn DateRangePicker(
                 }
             }
             div {
-                class: "ui-date-range-preview",
-                span { class: "ui-date-range-preview-primary", "{preview_primary_text}" }
-                for text in preview_secondary_text.iter() {
-                    span { class: "ui-date-range-preview-secondary", "{text}" }
-                }
-            }
-            div {
                 class: "ui-date-range-calendars",
                 for offset in 0..2 {
                     {
@@ -372,47 +365,57 @@ pub fn DateRangePicker(
                 }
             }
             div {
-                class: "ui-date-range-controls",
-                Button {
-                    class: "ui-date-range-clear",
-                    variant: ButtonVariant::Ghost,
-                    size: ButtonSize::Sm,
-                    on_click: {
-                        let mut draft_signal = draft_range.clone();
-                        let mut hover_signal = hover_date.clone();
-                        move |_| {
-                            draft_signal.set(None);
-                            hover_signal.set(None);
-                        }
-                    },
-                    "清除"
+                class: "ui-date-range-footer",
+                div {
+                    class: "ui-date-range-preview",
+                    span { class: "ui-date-range-preview-primary", "{preview_primary_text}" }
+                    for text in preview_secondary_text.iter() {
+                        span { class: "ui-date-range-preview-secondary", "{text}" }
+                    }
                 }
-                Button {
-                    class: "ui-date-range-confirm",
-                    size: ButtonSize::Sm,
-                    disabled: confirm_disabled,
-                    on_click: {
-                        let mut value_signal = value.clone();
-                        let mut hover_signal = hover_date.clone();
-                        let draft_signal = draft_range.clone();
-                        let on_change = on_change_handler.clone();
-                        let popover_handle = popover_handle.clone();
-                        move |_| {
-                            let selection = draft_signal();
-                            if selection.is_none() && value_signal().is_none() {
-                                return;
+                div {
+                    class: "ui-date-range-controls",
+                    Button {
+                        class: "ui-date-range-clear",
+                        variant: ButtonVariant::Ghost,
+                        size: ButtonSize::Sm,
+                        on_click: {
+                            let mut draft_signal = draft_range.clone();
+                            let mut hover_signal = hover_date.clone();
+                            move |_| {
+                                draft_signal.set(None);
+                                hover_signal.set(None);
                             }
-                            value_signal.set(selection);
-                            if let Some(handler) = on_change.clone() {
-                                handler.call(selection);
+                        },
+                        "清除"
+                    }
+                    Button {
+                        class: "ui-date-range-confirm",
+                        size: ButtonSize::Sm,
+                        disabled: confirm_disabled,
+                        on_click: {
+                            let mut value_signal = value.clone();
+                            let mut hover_signal = hover_date.clone();
+                            let draft_signal = draft_range.clone();
+                            let on_change = on_change_handler.clone();
+                            let popover_handle = popover_handle.clone();
+                            move |_| {
+                                let selection = draft_signal();
+                                if selection.is_none() && value_signal().is_none() {
+                                    return;
+                                }
+                                value_signal.set(selection);
+                                if let Some(handler) = on_change.clone() {
+                                    handler.call(selection);
+                                }
+                                if let Some(mut handle) = popover_handle {
+                                    handle.state.set(false);
+                                }
+                                hover_signal.set(None);
                             }
-                            if let Some(mut handle) = popover_handle {
-                                handle.state.set(false);
-                            }
-                            hover_signal.set(None);
-                        }
-                    },
-                    "确定"
+                        },
+                        "确定"
+                    }
                 }
             }
         }

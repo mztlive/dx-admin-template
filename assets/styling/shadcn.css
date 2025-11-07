@@ -1468,8 +1468,23 @@
 }
 
 .ui-date-range-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+    flex: 1 1 auto;
     font-size: 0.85rem;
     color: hsl(var(--muted-foreground));
+}
+
+.ui-date-range-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 0.5rem;
 }
 
 .ui-date-range-shortcuts {
@@ -1483,8 +1498,8 @@
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
-    width: 100%;
-    margin-top: 0.5rem;
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 .ui-date-range-shortcut,
