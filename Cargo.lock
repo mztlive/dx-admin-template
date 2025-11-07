@@ -1874,6 +1874,7 @@ dependencies = [
  "chrono",
  "dioxus 0.7.0",
  "dioxus-motion",
+ "js-sys",
 ]
 
 [[package]]

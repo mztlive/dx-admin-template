@@ -862,17 +862,6 @@ pub fn Orders() -> Element {
                                                 move |range: Option<DateRange>| setter.set(range)
                                             },
                                         }
-                                        div { class: "orders-date-actions",
-                                            Button {
-                                                variant: ButtonVariant::Ghost,
-                                                size: ButtonSize::Sm,
-                                                on_click: {
-                                                    let mut setter = date_range.clone();
-                                                    move |_| setter.set(None)
-                                                },
-                                                "清除日期"
-                                            }
-                                        }
                                     }
                                 },
                             }

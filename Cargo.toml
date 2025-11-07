@@ -11,6 +11,9 @@ dioxus = { version = "0.7.0", features = ["router", "fullstack"] }
 dioxus-motion = "0.3.1"
 chrono = { version = "0.4", default-features = false, features = ["std"] }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+js-sys = "0.3"
+
 [features]
 default = ["web"]
 # The feature that are only required for the web = ["dioxus/web"] build target should be optional and only enabled in the web = ["dioxus/web"] feature
