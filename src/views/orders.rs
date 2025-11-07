@@ -942,18 +942,6 @@ pub fn Orders() -> Element {
                 }
                 CardContent {
                     div { class: "ui-stack", style: "gap: 1rem;",
-                        ToggleGroup {
-                            values: pipeline.clone(),
-                            mode: ToggleGroupMode::Single,
-                            on_value_change: {
-                                let mut setter = pipeline.clone();
-                                move |values: Vec<String>| setter.set(values)
-                            },
-                            ToggleGroupItem { value: "all".to_string(), "全部订单" }
-                            ToggleGroupItem { value: "awaiting_fulfillment".to_string(), "待履约" }
-                            ToggleGroupItem { value: "overdue".to_string(), "支付逾期" }
-                            ToggleGroupItem { value: "vip".to_string(), "VIP 客户" }
-                        }
                         if paginated_orders.is_empty() {
                             div { class: "orders-empty",
                                 span { class: "orders-metric-label", "没有匹配的订单" }
