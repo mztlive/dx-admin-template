@@ -1134,6 +1134,26 @@
     cursor: pointer;
 }
 
+.ui-select-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    color: hsl(var(--muted-foreground));
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.ui-select-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ui-select-trigger[data-open="true"] .ui-select-icon {
+    transform: rotate(180deg);
+    color: hsl(var(--foreground));
+}
+
 .ui-select-trigger:focus-visible,
 .ui-dropdown-trigger:focus-visible {
     outline: none;

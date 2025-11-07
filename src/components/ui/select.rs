@@ -65,8 +65,20 @@ pub fn Select(
                 },
                 span { "{display_text}" }
                 span {
-                    style: "font-size: 0.8rem; opacity: 0.7;",
-                    if open() { "▲" } else { "▼" }
+                    class: "ui-select-icon",
+                    "aria-hidden": "true",
+                    svg {
+                        view_box: "0 0 16 16",
+                        xmlns: "http://www.w3.org/2000/svg",
+                        path {
+                            d: "M4 6l4 4 4-4",
+                            fill: "none",
+                            stroke: "currentColor",
+                            "stroke-width": "1.5",
+                            "stroke-linecap": "round",
+                            "stroke-linejoin": "round",
+                        }
+                    }
                 }
             }
             if open() {
