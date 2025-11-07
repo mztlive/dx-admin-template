@@ -43,11 +43,10 @@ pub fn Combobox(
 ) -> Element {
     let classes = merge_class("ui-combobox", class);
     let trigger_id = id.unwrap_or_default();
-    let search_placeholder = search_placeholder.unwrap_or_else(|| "Search...".to_string());
-    let open = use_signal(|| false);
-    let current_selection = use_signal(move || selected.clone());
-    let query = use_signal(|| String::new());
-    let on_select_handler = on_select.clone();
+    let search_placeholder_text = search_placeholder.unwrap_or_else(|| "Search...".to_string());
+    let mut open = use_signal(|| false);
+    let mut current_selection = use_signal(move || selected.clone());
+    let mut query = use_signal(|| String::new());
 
     let current_value = current_selection();
     let display_label = current_value
@@ -77,98 +76,130 @@ pub fn Combobox(
         div {
             class: classes,
             "data-disabled": disabled,
-            onfocusout: {
-                let mut open_signal = open.clone();
-                move |_| open_signal.set(false)
-            },
-            button {
-                class: "ui-combobox-trigger",
-                id: trigger_id.clone(),
-                "aria-haspopup": "dialog",
-                "aria-expanded": if open() { "true" } else { "false" },
+            onfocusout: move |_| open.set(false),
+            ComboboxTrigger {
+                id: trigger_id,
                 disabled,
-                onclick: {
-                    let mut open_signal = open.clone();
-                    move |_| {
-                        if !disabled {
-                            let next_state = !open_signal();
-                            open_signal.set(next_state);
-                            if !next_state {
-                                let mut query_signal = query.clone();
-                                query_signal.set(String::new());
-                            }
+                open: open(),
+                display_label,
+                on_toggle: move |_| {
+                    if !disabled {
+                        let next_state = !open();
+                        open.set(next_state);
+                        if !next_state {
+                            query.set(String::new());
                         }
                     }
-                },
-                span { "{display_label}" }
-                span { class: "ui-combobox-caret", if open() { "▲" } else { "▼" } }
+                }
             }
             if open() {
-                div {
-                    class: "ui-combobox-content",
-                    div {
-                        class: "ui-combobox-search",
-                        input {
-                            class: "ui-combobox-input",
-                            placeholder: search_placeholder.clone(),
-                            r#type: "text",
-                            autofocus: true,
-                            value: "{query()}",
-                            oninput: {
-                                let mut query_signal = query.clone();
-                                move |event| query_signal.set(event.value())
-                            },
+                ComboboxContent {
+                    search_placeholder: search_placeholder_text,
+                    query,
+                    filtered_options,
+                    current_value,
+                    on_select: move |value: String| {
+                        current_selection.set(Some(value.clone()));
+                        if let Some(callback) = on_select.as_ref() {
+                            callback.call(value);
                         }
+                        open.set(false);
+                        query.set(String::new());
                     }
-                    if filtered_options.is_empty() {
-                        div {
-                            class: "ui-combobox-empty",
-                            "No results found"
-                        }
-                    } else {
-                        ul {
-                            class: "ui-combobox-list",
-                            for option in filtered_options {
-                                {
-                                    let is_active = current_value
-                                        .as_ref()
-                                        .map(|value| value == &option.value)
-                                        .unwrap_or(false);
-                                    let option_value = option.value.clone();
-                                    let option_label = option.label.clone();
-                                    let option_description = option.description.clone();
-                                    rsx! {
-                                        li {
-                                            class: "ui-combobox-item",
-                                            "data-state": if is_active { "active" } else { "inactive" },
-                                            button {
-                                                r#type: "button",
-                                                onclick: {
-                                                    let option_value = option_value.clone();
-                                                    let handler = on_select_handler.clone();
-                                                    let mut open_signal = open.clone();
-                                                    let mut current_signal = current_selection.clone();
-                                                    let mut query_signal = query.clone();
-                                                    move |_| {
-                                                        current_signal.set(Some(option_value.clone()));
-                                                        if let Some(callback) = handler.clone() {
-                                                            callback.call(option_value.clone());
-                                                        }
-                                                        open_signal.set(false);
-                                                        query_signal.set(String::new());
-                                                    }
-                                                },
-                                                span { class: "ui-combobox-label", "{option_label}" }
-                                                if let Some(description) = option_description {
-                                                    span { class: "ui-combobox-description", "{description}" }
-                                                }
-                                            }
-                                        }
-                                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn ComboboxTrigger(
+    #[props(into)] id: String,
+    disabled: bool,
+    open: bool,
+    #[props(into)] display_label: String,
+    on_toggle: EventHandler<()>,
+) -> Element {
+    rsx! {
+        button {
+            class: "ui-combobox-trigger",
+            id,
+            "aria-haspopup": "dialog",
+            "aria-expanded": if open { "true" } else { "false" },
+            disabled,
+            onclick: move |_| on_toggle.call(()),
+            span { "{display_label}" }
+            span { class: "ui-combobox-caret", if open { "▲" } else { "▼" } }
+        }
+    }
+}
+
+#[component]
+fn ComboboxContent(
+    #[props(into)] search_placeholder: String,
+    mut query: Signal<String>,
+    filtered_options: Vec<ComboboxOption>,
+    current_value: Option<String>,
+    on_select: EventHandler<String>,
+) -> Element {
+    rsx! {
+        div {
+            class: "ui-combobox-content",
+            div {
+                class: "ui-combobox-search",
+                input {
+                    class: "ui-combobox-input",
+                    placeholder: search_placeholder,
+                    r#type: "text",
+                    autofocus: true,
+                    value: "{query()}",
+                    oninput: move |event| query.set(event.value()),
+                }
+            }
+            if filtered_options.is_empty() {
+                div {
+                    class: "ui-combobox-empty",
+                    "No results found"
+                }
+            } else {
+                ul {
+                    class: "ui-combobox-list",
+                    for option in filtered_options {
+                        {
+                            let is_active = current_value.as_ref().map(|v| v == &option.value).unwrap_or(false);
+                            rsx! {
+                                ComboboxItem {
+                                    option,
+                                    is_active,
+                                    on_select
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn ComboboxItem(
+    option: ComboboxOption,
+    is_active: bool,
+    on_select: EventHandler<String>,
+) -> Element {
+    let value = option.value.clone();
+
+    rsx! {
+        li {
+            class: "ui-combobox-item",
+            "data-state": if is_active { "active" } else { "inactive" },
+            button {
+                r#type: "button",
+                onclick: move |_| on_select.call(value.clone()),
+                span { class: "ui-combobox-label", "{option.label}" }
+                if let Some(description) = option.description {
+                    span { class: "ui-combobox-description", "{description}" }
                 }
             }
         }

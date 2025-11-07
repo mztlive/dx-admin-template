@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use super::button::{Button, ButtonVariant, ButtonSize};
 
 #[derive(Clone, PartialEq)]
 pub struct MenubarItem {
@@ -50,67 +51,90 @@ pub fn Menubar(
     #[props(optional)] on_select: Option<EventHandler<String>>,
 ) -> Element {
     let mut open = use_signal(|| None::<usize>);
-    let handler = on_select.clone();
-
-    let menu_nodes: Vec<_> = menus
-        .iter()
-        .enumerate()
-        .map(|(index, menu)| {
-            let mut open_signal_hover = open.clone();
-            let mut open_signal_click = open.clone();
-            let is_open = open() == Some(index);
-            let item_nodes: Vec<_> = menu
-                .items
-                .iter()
-                .map(|item| {
-                    let value = item.value.clone();
-                    let shortcut = item.shortcut.clone();
-                    let destructive = item.destructive;
-                    let handler_clone = handler.clone();
-                    let mut open_close = open.clone();
-
-                    rsx! {
-                        button {
-                            class: "ui-menubar-item",
-                            "data-variant": if destructive { "destructive" } else { "default" },
-                            onclick: move |_| {
-                                if let Some(cb) = handler_clone.clone() {
-                                    cb.call(value.clone());
-                                }
-                                open_close.set(None);
-                            },
-                            span { "{item.label}" }
-                            if let Some(shortcut) = shortcut.clone() {
-                                span { style: "font-size: 0.75rem; opacity: 0.6;", "{shortcut}" }
-                            }
-                        }
-                    }
-                })
-                .collect();
-
-            rsx! {
-                span {
-                    style: "position: relative;",
-                    button {
-                        class: "ui-menubar-trigger",
-                        "data-open": if is_open { "true" } else { "false" },
-                        onmouseenter: move |_| open_signal_hover.set(Some(index)),
-                        onclick: move |_| open_signal_click.set(Some(index)),
-                        "{menu.label}"
-                    }
-                    if is_open {
-                        div { class: "ui-menubar-content", {item_nodes.into_iter()} }
-                    }
-                }
-            }
-        })
-        .collect();
 
     rsx! {
         div {
             class: "ui-menubar",
             onmouseleave: move |_| open.set(None),
-                {menu_nodes.into_iter()}
+            for (index, menu) in menus.into_iter().enumerate() {
+                MenubarMenuTrigger {
+                    menu,
+                    index,
+                    is_open: open() == Some(index),
+                    on_hover: move |idx| open.set(Some(idx)),
+                    on_click: move |idx| open.set(Some(idx)),
+                    on_item_select: move |value: String| {
+                        if let Some(cb) = on_select.as_ref() {
+                            cb.call(value);
+                        }
+                        open.set(None);
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn MenubarMenuTrigger(
+    menu: MenubarMenu,
+    index: usize,
+    is_open: bool,
+    on_hover: EventHandler<usize>,
+    on_click: EventHandler<usize>,
+    on_item_select: EventHandler<String>,
+) -> Element {
+    rsx! {
+        span {
+            style: "position: relative;",
+            onmouseenter: move |_| on_hover.call(index),
+            Button {
+                variant: if is_open { ButtonVariant::Ghost } else { ButtonVariant::Ghost },
+                size: ButtonSize::Sm,
+                class: "ui-menubar-trigger",
+                on_click: move |_| on_click.call(index),
+                "{menu.label}"
+            }
+            if is_open {
+                div {
+                    class: "ui-menubar-content",
+                    for item in menu.items {
+                        MenubarItemButton {
+                            item,
+                            on_select: on_item_select
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn MenubarItemButton(
+    item: MenubarItem,
+    on_select: EventHandler<String>,
+) -> Element {
+    let value = item.value.clone();
+    let variant = if item.destructive { 
+        ButtonVariant::Destructive 
+    } else { 
+        ButtonVariant::Ghost 
+    };
+
+    rsx! {
+        Button {
+            variant,
+            size: ButtonSize::Sm,
+            class: "ui-menubar-item",
+            on_click: move |_| on_select.call(value.clone()),
+            span { "{item.label}" }
+            if let Some(shortcut) = item.shortcut {
+                span { 
+                    style: "margin-left: auto; font-size: 0.75rem; opacity: 0.6;", 
+                    "{shortcut}" 
+                }
+            }
         }
     }
 }

@@ -144,13 +144,12 @@ pub fn RadioChipGroup(
 ) -> Element {
     let classes = merge_class("ui-radio-chip-group", class);
     let current_value = value();
-    let group_disabled = disabled;
 
     rsx! {
         div {
             class: classes,
             role: "radiogroup",
-            "aria-disabled": group_disabled,
+            "aria-disabled": disabled,
             if let Some(label_text) = label.clone() {
                 span {
                     class: "ui-choice-group-label",
@@ -159,57 +158,62 @@ pub fn RadioChipGroup(
             }
             div {
                 class: "ui-choice-group-options",
-                for option in options.iter().cloned() {
+                for option in options {
                     {
-                        let option_label = option.label.clone();
-                        let option_value = option.value.clone();
-                        let option_description = option.description.clone();
-                        let is_disabled = group_disabled || option.disabled;
-                        let is_selected = current_value
-                            .as_ref()
-                            .map(|selected| selected == &option_value)
-                            .unwrap_or(false);
-                        let mut value_signal = value.clone();
-                        let handler = on_value_change.clone();
-
+                        let is_selected = current_value.as_ref().map(|v| v == &option.value).unwrap_or(false);
+                        let disabled_state = disabled || option.disabled;
                         rsx! {
-                            button {
-                                class: "ui-radio-chip",
-                                "data-state": if is_selected { "selected" } else { "idle" },
-                                "data-disabled": is_disabled,
-                                role: "radio",
-                                "aria-checked": if is_selected { "true" } else { "false" },
-                                "aria-disabled": if is_disabled { "true" } else { "false" },
-                                r#type: "button",
-                                disabled: is_disabled,
-                                onclick: move |_| {
-                                    if is_disabled {
-                                        return;
-                                    }
-                                    let already_selected = value_signal()
-                                        .as_ref()
-                                        .map(|selected| selected == &option_value)
-                                        .unwrap_or(false);
-                                    if !already_selected {
-                                        value_signal.set(Some(option_value.clone()));
-                                        if let Some(callback) = handler.clone() {
-                                            callback.call(option_value.clone());
-                                        }
-                                    }
-                                },
-                                span {
-                                    class: "ui-chip-label",
-                                    "{option_label}"
-                                }
-                                if let Some(description) = option_description.clone() {
-                                    span {
-                                        class: "ui-chip-description",
-                                        "{description}"
+                            RadioChipItem {
+                                option,
+                                is_selected,
+                                disabled: disabled_state,
+                                on_select: move |selected_value: String| {
+                                    value.set(Some(selected_value.clone()));
+                                    if let Some(callback) = on_value_change.as_ref() {
+                                        callback.call(selected_value);
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn RadioChipItem(
+    option: RadioChipOption,
+    is_selected: bool,
+    disabled: bool,
+    on_select: EventHandler<String>,
+) -> Element {
+    let value = option.value.clone();
+
+    rsx! {
+        button {
+            class: "ui-radio-chip",
+            "data-state": if is_selected { "selected" } else { "idle" },
+            "data-disabled": disabled,
+            role: "radio",
+            "aria-checked": if is_selected { "true" } else { "false" },
+            "aria-disabled": if disabled { "true" } else { "false" },
+            r#type: "button",
+            disabled,
+            onclick: move |_| {
+                if !disabled && !is_selected {
+                    on_select.call(value.clone());
+                }
+            },
+            span {
+                class: "ui-chip-label",
+                "{option.label}"
+            }
+            if let Some(description) = option.description {
+                span {
+                    class: "ui-chip-description",
+                    "{description}"
                 }
             }
         }

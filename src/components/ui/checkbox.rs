@@ -97,13 +97,12 @@ pub fn CheckboxChipGroup(
 ) -> Element {
     let classes = merge_class("ui-checkbox-chip-group", class);
     let current_values = values();
-    let group_disabled = disabled;
 
     rsx! {
         div {
             class: classes,
             role: "group",
-            "aria-disabled": group_disabled,
+            "aria-disabled": disabled,
             if let Some(label_text) = label.clone() {
                 span {
                     class: "ui-choice-group-label",
@@ -112,54 +111,68 @@ pub fn CheckboxChipGroup(
             }
             div {
                 class: "ui-choice-group-options",
-                for option in options.iter().cloned() {
+                for option in options {
                     {
-                        let option_label = option.label.clone();
-                        let option_value = option.value.clone();
-                        let option_description = option.description.clone();
-                        let is_disabled = group_disabled || option.disabled;
-                        let is_selected = current_values.iter().any(|item| item == &option_value);
-                        let mut values_signal = values.clone();
-                        let handler = on_values_change.clone();
-
+                        let is_selected = current_values.iter().any(|item| item == &option.value);
+                        let disabled_state = disabled || option.disabled;
                         rsx! {
-                            button {
-                                class: "ui-checkbox-chip",
-                                "data-state": if is_selected { "selected" } else { "idle" },
-                                "data-disabled": is_disabled,
-                                role: "checkbox",
-                                "aria-checked": if is_selected { "true" } else { "false" },
-                                "aria-disabled": if is_disabled { "true" } else { "false" },
-                                r#type: "button",
-                                disabled: is_disabled,
-                                onclick: move |_| {
-                                    if is_disabled {
-                                        return;
-                                    }
-                                    values_signal.with_mut(|items| {
-                                        if let Some(index) = items.iter().position(|item| item == &option_value) {
+                            CheckboxChipItem {
+                                option,
+                                is_selected,
+                                disabled: disabled_state,
+                                on_toggle: move |value: String| {
+                                    values.with_mut(|items| {
+                                        if let Some(index) = items.iter().position(|item| item == &value) {
                                             items.remove(index);
                                         } else {
-                                            items.push(option_value.clone());
+                                            items.push(value);
                                         }
                                     });
-                                    if let Some(callback) = handler.clone() {
-                                        callback.call(values_signal());
-                                    }
-                                },
-                                span {
-                                    class: "ui-chip-label",
-                                    "{option_label}"
-                                }
-                                if let Some(description) = option_description.clone() {
-                                    span {
-                                        class: "ui-chip-description",
-                                        "{description}"
+                                    if let Some(callback) = on_values_change.as_ref() {
+                                        callback.call(values());
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn CheckboxChipItem(
+    option: CheckboxChipOption,
+    is_selected: bool,
+    disabled: bool,
+    on_toggle: EventHandler<String>,
+) -> Element {
+    let value = option.value.clone();
+
+    rsx! {
+        button {
+            class: "ui-checkbox-chip",
+            "data-state": if is_selected { "selected" } else { "idle" },
+            "data-disabled": disabled,
+            role: "checkbox",
+            "aria-checked": if is_selected { "true" } else { "false" },
+            "aria-disabled": if disabled { "true" } else { "false" },
+            r#type: "button",
+            disabled,
+            onclick: move |_| {
+                if !disabled {
+                    on_toggle.call(value.clone());
+                }
+            },
+            span {
+                class: "ui-chip-label",
+                "{option.label}"
+            }
+            if let Some(description) = option.description {
+                span {
+                    class: "ui-chip-description",
+                    "{description}"
                 }
             }
         }

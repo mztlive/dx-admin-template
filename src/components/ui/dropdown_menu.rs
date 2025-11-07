@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use super::button::{Button, ButtonVariant, ButtonSize};
 
 #[derive(Clone, PartialEq)]
 pub enum DropdownItemVariant {
@@ -7,10 +8,10 @@ pub enum DropdownItemVariant {
 }
 
 impl DropdownItemVariant {
-    fn as_str(&self) -> &'static str {
+    fn to_button_variant(&self) -> ButtonVariant {
         match self {
-            DropdownItemVariant::Default => "default",
-            DropdownItemVariant::Destructive => "destructive",
+            DropdownItemVariant::Default => ButtonVariant::Ghost,
+            DropdownItemVariant::Destructive => ButtonVariant::Destructive,
         }
     }
 }
@@ -56,25 +57,19 @@ pub fn DropdownMenu(
     #[props(into)] items: Vec<DropdownMenuItem>,
     #[props(optional)] on_select: Option<EventHandler<String>>,
 ) -> Element {
-    let open = use_signal(|| false);
-    let on_select_handler = on_select.clone();
+    let mut open = use_signal(|| false);
 
     rsx! {
         div {
             class: "ui-dropdown",
-            button {
+            Button {
+                variant: ButtonVariant::Ghost,
+                size: ButtonSize::Sm,
                 class: "ui-dropdown-trigger",
-                "data-open": if open() { "true" } else { "false" },
-                onclick: {
-                    let mut signal = open.clone();
-                    move |_| {
-                        let new_state = !signal();
-                        signal.set(new_state);
-                    }
-                },
-                span { "{label}" }
+                on_click: move |_| open.set(!open()),
+                "{label}"
                 span {
-                    style: "font-size: 0.85rem; opacity: 0.7;",
+                    style: "margin-left: 0.5rem; font-size: 0.85rem; opacity: 0.7;",
                     "⋮"
                 }
             }
@@ -83,37 +78,42 @@ pub fn DropdownMenu(
                     class: "ui-dropdown-content",
                     div {
                         class: "ui-dropdown-list",
-                        for item in items.iter().cloned() {
-                            {
-                                let value = item.value.clone();
-                                let shortcut = item.shortcut.clone();
-                                let variant = item.variant.as_str().to_string();
-                                let mut open_signal = open.clone();
-                                let handler = on_select_handler.clone();
-
-                                rsx! {
-                                    button {
-                                        class: "ui-dropdown-item",
-                                        "data-variant": variant,
-                                        onclick: {
-                                            let value = value.clone();
-                                            let handler = handler.clone();
-                                            move |_| {
-                                                if let Some(callback) = handler.clone() {
-                                                    callback.call(value.clone());
-                                                }
-                                                open_signal.set(false);
-                                            }
-                                        },
-                                        span { "{item.label}" }
-                                        if let Some(shortcut) = shortcut.clone() {
-                                            span { style: "font-size: 0.75rem; opacity: 0.6;", "{shortcut}" }
-                                        }
+                        for item in items {
+                            DropdownMenuItemButton {
+                                item,
+                                on_click: move |value: String| {
+                                    if let Some(callback) = on_select.as_ref() {
+                                        callback.call(value);
                                     }
+                                    open.set(false);
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn DropdownMenuItemButton(
+    item: DropdownMenuItem,
+    on_click: EventHandler<String>,
+) -> Element {
+    let value = item.value.clone();
+
+    rsx! {
+        Button {
+            variant: item.variant.to_button_variant(),
+            size: ButtonSize::Sm,
+            class: "ui-dropdown-item",
+            on_click: move |_| on_click.call(value.clone()),
+            span { "{item.label}" }
+            if let Some(shortcut) = item.shortcut {
+                span { 
+                    style: "margin-left: auto; font-size: 0.75rem; opacity: 0.6;", 
+                    "{shortcut}" 
                 }
             }
         }
