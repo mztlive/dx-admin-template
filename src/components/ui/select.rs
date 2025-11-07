@@ -26,9 +26,7 @@ pub fn Select(
     #[props(optional)] on_change: Option<EventHandler<String>>,
 ) -> Element {
     let mut open = use_signal(|| false);
-    let current = use_signal(move || selected.clone());
-    let on_change_handler = on_change.clone();
-    let trigger_id = id.unwrap_or_default();
+    let mut current = use_signal(move || selected.clone());
     let mut container_ref = use_signal(|| None as Option<Rc<MountedData>>);
 
     use_effect(move || {
@@ -60,90 +58,120 @@ pub fn Select(
             onmounted: move |event| {
                 container_ref.set(Some(event.data()));
             },
-            onblur: {
-                let mut open_signal = open.clone();
-                move |_| {
-                    open_signal.set(false);
-                }
+            onblur: move |_| {
+                open.set(false);
             },
-            button {
-                class: "ui-select-trigger",
-                "data-open": if open() { "true" } else { "false" },
+            SelectTrigger {
+                id: id.clone(),
+                open: open(),
                 disabled,
-                id: trigger_id.clone(),
-                "aria-haspopup": "listbox",
-                "aria-expanded": if open() { "true" } else { "false" },
-                onclick: {
-                    let mut open_signal = open.clone();
-                    move |_| {
-                        if !disabled {
-                            let new_state = !open_signal();
-                            open_signal.set(new_state);
-                        }
-                    }
-                },
-                span { "{display_text}" }
-                span {
-                    class: "ui-select-icon",
-                    "aria-hidden": "true",
-                    svg {
-                        view_box: "0 0 16 16",
-                        xmlns: "http://www.w3.org/2000/svg",
-                        path {
-                            d: "M4 6l4 4 4-4",
-                            fill: "none",
-                            stroke: "currentColor",
-                            "stroke-width": "1.5",
-                            "stroke-linecap": "round",
-                            "stroke-linejoin": "round",
-                        }
+                display_text,
+                on_toggle: move |_| {
+                    if !disabled {
+                        open.set(!open());
                     }
                 }
             }
             if open() {
-                div {
-                    class: "ui-select-content",
-                    div {
-                        class: "ui-select-list",
-                        for option in options.iter().cloned() {
-                            {
-                                let is_active = selected_value
-                                    .as_ref()
-                                    .map(|value| value == &option.value)
-                                    .unwrap_or(false);
-                                let value = option.value.clone();
-                                let handler = on_change_handler.clone();
-                                let mut open_signal = open.clone();
-                                let mut current_signal = current.clone();
+                SelectContent {
+                    options: options.clone(),
+                    selected_value,
+                    on_select: move |value: String| {
+                        current.set(Some(value.clone()));
+                        if let Some(callback) = on_change.as_ref() {
+                            callback.call(value);
+                        }
+                        open.set(false);
+                    }
+                }
+            }
+        }
+    }
+}
 
-                                rsx! {
-                                    button {
-                                        class: "ui-select-item",
-                                        "data-state": if is_active { "active" } else { "inactive" },
-                                        onmousedown: {
-                                            let value = value.clone();
-                                            let handler = handler.clone();
-                                            move |event| {
-                                                event.prevent_default();
-                                                current_signal.set(Some(value.clone()));
-                                                if let Some(callback) = handler.clone() {
-                                                    callback.call(value.clone());
-                                                }
-                                                open_signal.set(false);
-                                            }
-                                        },
-                                        span { "{option.label}" }
-                                        if is_active {
-                                            span {
-                                                style: "font-size: 0.75rem; opacity: 0.7;",
-                                                "✓"
-                                            }
-                                        }
-                                    }
-                                }
+#[component]
+fn SelectTrigger(
+    #[props(into, default)] id: Option<String>,
+    open: bool,
+    disabled: bool,
+    #[props(into)] display_text: String,
+    on_toggle: EventHandler<()>,
+) -> Element {
+    rsx! {
+        button {
+            class: "ui-select-trigger",
+            "data-open": if open { "true" } else { "false" },
+            disabled,
+            id: id.unwrap_or_default(),
+            "aria-haspopup": "listbox",
+            "aria-expanded": if open { "true" } else { "false" },
+            onclick: move |_| on_toggle.call(()),
+            span { "{display_text}" }
+            span {
+                class: "ui-select-icon",
+                "aria-hidden": "true",
+                svg {
+                    view_box: "0 0 16 16",
+                    xmlns: "http://www.w3.org/2000/svg",
+                    path {
+                        d: "M4 6l4 4 4-4",
+                        fill: "none",
+                        stroke: "currentColor",
+                        "stroke-width": "1.5",
+                        "stroke-linecap": "round",
+                        "stroke-linejoin": "round",
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn SelectContent(
+    options: Vec<SelectOption>,
+    selected_value: Option<String>,
+    on_select: EventHandler<String>,
+) -> Element {
+    rsx! {
+        div {
+            class: "ui-select-content",
+            div {
+                class: "ui-select-list",
+                for option in options {
+                    {
+                        let is_active = selected_value.as_ref().map(|v| v == &option.value).unwrap_or(false);
+                        rsx! {
+                            SelectItem {
+                                option,
+                                is_active,
+                                on_select
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn SelectItem(option: SelectOption, is_active: bool, on_select: EventHandler<String>) -> Element {
+    let value = option.value.clone();
+
+    rsx! {
+        button {
+            class: "ui-select-item",
+            "data-state": if is_active { "active" } else { "inactive" },
+            onmousedown: move |event| {
+                event.prevent_default();
+                on_select.call(value.clone());
+            },
+            span { "{option.label}" }
+            if is_active {
+                span {
+                    style: "font-size: 0.75rem; opacity: 0.7;",
+                    "✓"
                 }
             }
         }
