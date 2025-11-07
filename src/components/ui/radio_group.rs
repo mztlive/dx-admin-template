@@ -1,15 +1,7 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use dioxus::prelude::*;
-
-fn merge_class(base: &str, extra: Option<String>) -> String {
-    if let Some(extra) = extra.filter(|extra| !extra.trim().is_empty()) {
-        format!("{base} {}", extra.trim())
-    } else {
-        base.to_string()
-    }
-}
-
+use super::utils::merge_class;
 static RADIO_GROUP_IDS: AtomicUsize = AtomicUsize::new(0);
 
 fn next_radio_group_name() -> String {

@@ -1,17 +1,9 @@
 use super::button::{Button, ButtonSize, ButtonVariant};
 use chrono::{Datelike, Duration, NaiveDate};
 use dioxus::prelude::*;
-#[cfg(not(target_arch = "wasm32"))]
+use super::utils::merge_class;#[cfg(not(target_arch = "wasm32"))]
 use std::time::SystemTime;
 use crate::components::ui::PopoverHandle;
-
-fn merge_class(base: &str, extra: Option<String>) -> String {
-    if let Some(extra) = extra.filter(|extra| !extra.trim().is_empty()) {
-        format!("{base} {}", extra.trim())
-    } else {
-        base.to_string()
-    }
-}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct DateRange {

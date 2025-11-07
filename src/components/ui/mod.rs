@@ -2,6 +2,8 @@
 //! Each component mirrors the styling and API conventions of the upstream React components while
 //! remaining idiomatic to Rust and Dioxus.
 
+mod utils;
+
 mod accordion;
 mod alert;
 mod aspect_ratio;

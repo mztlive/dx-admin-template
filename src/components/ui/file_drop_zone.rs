@@ -1,15 +1,7 @@
 use dioxus::html::events::{DragEvent, FormEvent};
 use dioxus::html::{FileData, HasFileData};
 use dioxus::prelude::*;
-
-fn merge_class(base: &str, extra: Option<String>) -> String {
-    if let Some(extra) = extra.filter(|extra| !extra.trim().is_empty()) {
-        format!("{base} {}", extra.trim())
-    } else {
-        base.to_string()
-    }
-}
-
+use super::utils::merge_class;
 #[derive(Clone, Debug, PartialEq)]
 pub struct FileMetadata {
     pub name: String,

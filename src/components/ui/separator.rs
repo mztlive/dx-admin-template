@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-
+use super::utils::merge_class;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SeparatorOrientation {
     Horizontal,
@@ -18,14 +18,6 @@ impl SeparatorOrientation {
 impl Default for SeparatorOrientation {
     fn default() -> Self {
         SeparatorOrientation::Horizontal
-    }
-}
-
-fn merge_class(base: &str, extra: Option<String>) -> String {
-    if let Some(extra) = extra.filter(|extra| !extra.trim().is_empty()) {
-        format!("{base} {}", extra.trim())
-    } else {
-        base.to_string()
     }
 }
 

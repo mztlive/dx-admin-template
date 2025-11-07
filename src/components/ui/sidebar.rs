@@ -1,21 +1,5 @@
 use dioxus::prelude::*;
-
-fn merge_class(base: &str, extra: Option<String>) -> String {
-    if let Some(extra) = extra.filter(|extra| !extra.trim().is_empty()) {
-        format!("{base} {}", extra.trim())
-    } else {
-        base.to_string()
-    }
-}
-
-fn data_bool(value: bool) -> &'static str {
-    if value {
-        "true"
-    } else {
-        "false"
-    }
-}
-
+use super::utils::{merge_class, data_bool};
 #[component]
 pub fn Sidebar(
     #[props(default)] collapsed: bool,

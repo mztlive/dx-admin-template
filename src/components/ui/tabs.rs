@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
-
-#[allow(dead_code)]
+use super::utils::merge_class;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TabsOrientation {
     Horizontal,
@@ -26,14 +25,6 @@ impl Default for TabsOrientation {
 struct TabsContext {
     value: Signal<String>,
     on_change: Option<EventHandler<String>>,
-}
-
-fn merge_class(base: &str, extra: Option<String>) -> String {
-    if let Some(extra) = extra.filter(|extra| !extra.trim().is_empty()) {
-        format!("{base} {}", extra.trim())
-    } else {
-        base.to_string()
-    }
 }
 
 #[component]

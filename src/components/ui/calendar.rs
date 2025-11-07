@@ -1,14 +1,6 @@
 use chrono::{Datelike, Duration, NaiveDate};
 use dioxus::prelude::*;
-
-fn merge_class(base: &str, extra: Option<String>) -> String {
-    if let Some(extra) = extra.filter(|extra| !extra.trim().is_empty()) {
-        format!("{base} {}", extra.trim())
-    } else {
-        base.to_string()
-    }
-}
-
+use super::utils::merge_class;
 const WEEKDAY_LABELS: [&str; 7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 fn first_day_of_month(date: NaiveDate) -> NaiveDate {
