@@ -1,9 +1,9 @@
 use crate::components::ui::{
     Avatar, Badge, BadgeVariant, Button, ButtonSize, ButtonVariant, Card, CardContent,
     CardDescription, CardFooter, CardHeader, CardTitle, CheckboxChipGroup, CheckboxChipOption,
-    DateRange, DateRangePicker, Input, Label, Pagination, Popover, Select, SelectOption, Slider,
-    Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, ToggleGroup,
-    ToggleGroupItem, ToggleGroupMode,
+    DateRange, DateRangePicker, Input, InteractiveTable, Label, Pagination, Popover, Select,
+    SelectOption, Slider, Table, TableBody, TableCaption, TableCell, TableColumnConfig,
+    TableFooter, TableHead, TableHeader, TableRow, TableRowData,
 };
 use chrono::NaiveDate;
 use dioxus::prelude::*;
@@ -948,6 +948,134 @@ pub fn Orders() -> Element {
                                 span { class: "orders-metric-sub", "调整筛选条件或清除限制重新查看。" }
                             }
                         } else {
+                            // 示例1：基础表格
+                            h3 { style: "margin-top: 1rem;", "1. 基础表格 (Table)" }
+                            Table {
+                                TableCaption { "订单数据表格" }
+                                TableHeader {
+                                    TableRow {
+                                        TableHead { "订单号" }
+                                        TableHead { "客户" }
+                                        TableHead { "状态" }
+                                        TableHead { "金额" }
+                                    }
+                                }
+                                TableBody {
+                                    for order in paginated_orders.iter().take(3).cloned() {
+                                        TableRow {
+                                            TableCell { "{order.number}" }
+                                            TableCell { "{order.customer_name}" }
+                                            TableCell {
+                                                Badge { variant: order.status.badge(), "{order.status.label()}" }
+                                            }
+                                            TableCell { {format!("¥{:.2}", order.total)} }
+                                        }
+                                    }
+                                }
+                                TableFooter {
+                                    TableRow {
+                                        TableCell { "总计 (前3项)" }
+                                        TableCell { }
+                                        TableCell { }
+                                        TableCell {
+                                            {
+                                                let total: f32 = paginated_orders.iter().take(3).map(|o| o.total).sum();
+                                                format!("¥{:.2}", total)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 示例2：InteractiveTable with 行选择 + 列可见性控制
+                            h3 { style: "margin-top: 2rem;", "2. 高级数据表格 (InteractiveTable) - 行选择 + 列切换" }
+                            {
+                                let mut selected_rows = use_signal(|| std::collections::HashSet::<String>::new());
+                                let selected_count = selected_rows().len();
+                                
+                                let columns = vec![
+                                    TableColumnConfig {
+                                        id: "number".to_string(),
+                                        label: "订单号".to_string(),
+                                        toggleable: false,
+                                        visible_by_default: true,
+                                    },
+                                    TableColumnConfig {
+                                        id: "customer".to_string(),
+                                        label: "客户".to_string(),
+                                        toggleable: true,
+                                        visible_by_default: true,
+                                    },
+                                    TableColumnConfig {
+                                        id: "date".to_string(),
+                                        label: "日期".to_string(),
+                                        toggleable: true,
+                                        visible_by_default: true,
+                                    },
+                                    TableColumnConfig {
+                                        id: "status".to_string(),
+                                        label: "状态".to_string(),
+                                        toggleable: true,
+                                        visible_by_default: true,
+                                    },
+                                    TableColumnConfig {
+                                        id: "payment".to_string(),
+                                        label: "支付".to_string(),
+                                        toggleable: true,
+                                        visible_by_default: true,
+                                    },
+                                    TableColumnConfig {
+                                        id: "channel".to_string(),
+                                        label: "渠道".to_string(),
+                                        toggleable: true,
+                                        visible_by_default: false,
+                                    },
+                                    TableColumnConfig {
+                                        id: "total".to_string(),
+                                        label: "金额".to_string(),
+                                        toggleable: true,
+                                        visible_by_default: true,
+                                    },
+                                ];
+
+                                let rows: Vec<TableRowData> = paginated_orders
+                                    .iter()
+                                    .map(|order| {
+                                        let mut cells = std::collections::HashMap::new();
+                                        cells.insert("number".to_string(), order.number.clone());
+                                        cells.insert("customer".to_string(), format!("{} ({})", order.customer_name, order.customer_email));
+                                        cells.insert("date".to_string(), order.placed_on.format("%Y-%m-%d").to_string());
+                                        cells.insert("status".to_string(), order.status.label().to_string());
+                                        cells.insert("payment".to_string(), order.payment_status.label().to_string());
+                                        cells.insert("channel".to_string(), order.channel.label().to_string());
+                                        cells.insert("total".to_string(), format!("¥{:.2}", order.total));
+                                        TableRowData {
+                                            id: order.number.clone(),
+                                            cells,
+                                        }
+                                    })
+                                    .collect();
+
+                                rsx! {
+                                    div { style: "margin-bottom: 0.5rem;",
+                                        span { style: "font-size: 0.875rem; color: var(--muted-foreground);",
+                                            "已选择 {selected_count} 行"
+                                        }
+                                    }
+                                    InteractiveTable {
+                                        columns: columns,
+                                        rows: rows,
+                                        default_selected: Some(vec![]),
+                                        empty_state: Some("没有数据".to_string()),
+                                        on_selection_change: move |_selected: Vec<String>| {
+                                            // 选中的订单回调
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 示例3：完整功能表格 (原始设计)
+                            h3 { style: "margin-top: 2rem;", "3. 完整功能表格" }
                             Table {
                                 TableHeader {
                                     TableRow {

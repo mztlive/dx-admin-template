@@ -4,9 +4,9 @@ use std::{
     rc::Rc,
 };
 
+use super::{utils::merge_class, Button, ButtonSize, ButtonVariant};
 use crate::components::ui::Checkbox;
 use dioxus::prelude::*;
-use super::utils::merge_class;
 #[component]
 pub fn Table(#[props(into, default)] class: Option<String>, children: Element) -> Element {
     let classes = merge_class("ui-table", class);
@@ -249,30 +249,53 @@ pub fn InteractiveTable(
     rsx! {
         div {
             class: wrapper_class,
+            onclick: {
+                let mut open = columns_menu_open.clone();
+                move |_| {
+                    if open() {
+                        open.set(false);
+                    }
+                }
+            },
             div {
                 class: "ui-data-table-toolbar",
                 if !toggleable_columns.is_empty() {
                     div {
                         class: "ui-data-table-columns",
-                        onfocusout: {
-                            let mut open = columns_menu_open.clone();
-                            move |_| open.set(false)
-                        },
-                        button {
+                        Button {
+                            variant: ButtonVariant::Outline,
+                            size: ButtonSize::Sm,
                             class: "ui-data-table-columns-trigger",
-                            "data-open": if columns_menu_open() { "true" } else { "false" },
-                            onclick: {
+                            on_click: {
                                 let mut open = columns_menu_open.clone();
-                                move |_| {
+                                move |evt: MouseEvent| {
+                                    evt.stop_propagation();
                                     let next = !open();
                                     open.set(next);
                                 }
                             },
-                            "列显隐"
+                            svg {
+                                width: "16",
+                                height: "16",
+                                view_box: "0 0 24 24",
+                                fill: "none",
+                                stroke: "currentColor",
+                                stroke_width: "2",
+                                stroke_linecap: "round",
+                                stroke_linejoin: "round",
+                                rect { x: "3", y: "3", width: "7", height: "7" }
+                                rect { x: "14", y: "3", width: "7", height: "7" }
+                                rect { x: "14", y: "14", width: "7", height: "7" }
+                                rect { x: "3", y: "14", width: "7", height: "7" }
+                            }
+                            "列控制"
                         }
                         if columns_menu_open() {
                             div {
                                 class: "ui-data-table-columns-popover",
+                                onclick: move |evt| {
+                                    evt.stop_propagation();
+                                },
                                 for column in toggleable_columns.iter() {
                                     {
                                         let column_id = column.id.clone();
