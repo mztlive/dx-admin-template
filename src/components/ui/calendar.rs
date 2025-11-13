@@ -1,4 +1,4 @@
-use chrono::{Datelike, Duration, NaiveDate};
+use crate::time::{Duration, NaiveDate};
 use dioxus::prelude::*;
 use super::utils::merge_class;
 const WEEKDAY_LABELS: [&str; 7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

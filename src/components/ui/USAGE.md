@@ -966,8 +966,7 @@ fn InteractiveTableSample() -> Element {
 - `on_select` 返回选中的 `NaiveDate`。
 
 ```rust
-use crate::components::ui::Calendar;
-use chrono::NaiveDate;
+use crate::{components::ui::Calendar, time::NaiveDate};
 use dioxus::prelude::*;
 
 #[component]
@@ -992,8 +991,10 @@ fn CalendarSample() -> Element {
 - `on_change` 返回新的区间或 `None`。
 
 ```rust
-use crate::components::ui::{DateRange, DateRangePicker};
-use chrono::NaiveDate;
+use crate::{
+    components::ui::{DateRange, DateRangePicker},
+    time::NaiveDate,
+};
 use dioxus::prelude::*;
 
 #[component]

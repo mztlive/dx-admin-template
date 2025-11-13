@@ -2,6 +2,7 @@
 // need dioxus
 use dioxus::prelude::*;
 
+mod time;
 use views::{Components, Home, Navbar, Orders};
 
 /// Define a components module that contains all shared components for our app.

@@ -1,9 +1,12 @@
 use super::button::{Button, ButtonSize, ButtonVariant};
-use chrono::{Datelike, Duration, NaiveDate};
+use super::utils::merge_class;
+use crate::{
+    components::ui::PopoverHandle,
+    time::{Duration, NaiveDate},
+};
 use dioxus::prelude::*;
-use super::utils::merge_class;#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(target_arch = "wasm32"))]
 use std::time::SystemTime;
-use crate::components::ui::PopoverHandle;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct DateRange {
@@ -77,9 +80,9 @@ fn today_date() -> NaiveDate {
 
 #[cfg(not(target_arch = "wasm32"))]
 fn today_date() -> NaiveDate {
-    let now = SystemTime::now();
-    let datetime: chrono::DateTime<chrono::Utc> = now.into();
-    datetime.date_naive()
+    NaiveDate::from_system_time(SystemTime::now())
+        .or_else(|| NaiveDate::from_ymd_opt(1970, 1, 1))
+        .expect("system time within supported range")
 }
 
 fn describe_range(range: DateRange) -> String {

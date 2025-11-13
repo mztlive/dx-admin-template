@@ -5,7 +5,7 @@ use crate::components::ui::{
     SelectOption, Slider, Table, TableBody, TableCaption, TableCell, TableColumnConfig,
     TableFooter, TableHead, TableHeader, TableRow, TableRowData,
 };
-use chrono::NaiveDate;
+use crate::time::NaiveDate;
 use dioxus::prelude::*;
 
 const PAGE_SIZE: usize = 8;
