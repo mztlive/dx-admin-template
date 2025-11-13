@@ -1,5 +1,5 @@
+use super::button::{Button, ButtonSize, ButtonVariant};
 use dioxus::prelude::*;
-use super::button::{Button, ButtonVariant, ButtonSize};
 
 #[derive(Clone, PartialEq)]
 pub enum DropdownItemVariant {
@@ -97,10 +97,7 @@ pub fn DropdownMenu(
 }
 
 #[component]
-fn DropdownMenuItemButton(
-    item: DropdownMenuItem,
-    on_click: EventHandler<String>,
-) -> Element {
+fn DropdownMenuItemButton(item: DropdownMenuItem, on_click: EventHandler<String>) -> Element {
     let value = item.value.clone();
 
     rsx! {
@@ -111,9 +108,9 @@ fn DropdownMenuItemButton(
             on_click: move |_| on_click.call(value.clone()),
             span { "{item.label}" }
             if let Some(shortcut) = item.shortcut {
-                span { 
-                    style: "margin-left: auto; font-size: 0.75rem; opacity: 0.6;", 
-                    "{shortcut}" 
+                span {
+                    style: "margin-left: auto; font-size: 0.75rem; opacity: 0.6;",
+                    "{shortcut}"
                 }
             }
         }

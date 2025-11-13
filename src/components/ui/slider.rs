@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 #[component]
 pub fn Slider(
     #[props(default = 0.0f32)] value: f32,

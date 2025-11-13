@@ -1,8 +1,8 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 
 /// Horizontal or vertical separator/divider component.
-/// 
+///
 /// # Example
 /// ```rust
 /// rsx! {

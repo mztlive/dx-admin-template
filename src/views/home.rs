@@ -1,9 +1,7 @@
 use crate::components::ui::{
-    Accordion, AccordionContent, AccordionItem, AccordionTrigger,
-    Badge, BadgeVariant, Button, ButtonVariant, Card, CardContent,
-    CardDescription, CardFooter, CardHeader, CardTitle,
-    Progress, Tabs,
-    TabsContent, TabsList, TabsTrigger,
+    Accordion, AccordionContent, AccordionItem, AccordionTrigger, Badge, BadgeVariant, Button,
+    ButtonVariant, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Progress,
+    Tabs, TabsContent, TabsList, TabsTrigger,
 };
 use dioxus::prelude::*;
 

@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use super::input::Input;
+use dioxus::prelude::*;
 
 #[derive(Clone, PartialEq)]
 pub struct CommandItem {

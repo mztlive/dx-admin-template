@@ -12,7 +12,9 @@ pub fn Popover(
     #[props(into, default = "bottom".to_string())] placement: String,
 ) -> Element {
     let mut open = use_signal(|| false);
-    use_context_provider(|| PopoverHandle { state: open.clone() });
+    use_context_provider(|| PopoverHandle {
+        state: open.clone(),
+    });
 
     rsx! {
         div {

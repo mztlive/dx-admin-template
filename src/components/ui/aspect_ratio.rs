@@ -1,8 +1,8 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 
 /// A simple wrapper component that maintains a specified aspect ratio for its content.
-/// 
+///
 /// # Example
 /// ```rust
 /// rsx! {

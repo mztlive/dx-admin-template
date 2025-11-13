@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 #[derive(Clone)]
 struct CollapsibleContext {
     open: Signal<bool>,

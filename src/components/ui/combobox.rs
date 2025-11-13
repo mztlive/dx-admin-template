@@ -1,6 +1,6 @@
-use dioxus::prelude::*;
-use super::utils::merge_class;
 use super::input::Input;
+use super::utils::merge_class;
+use dioxus::prelude::*;
 #[derive(Clone, PartialEq)]
 pub struct ComboboxOption {
     pub label: String,

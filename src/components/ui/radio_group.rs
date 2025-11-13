@@ -1,7 +1,7 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 static RADIO_GROUP_IDS: AtomicUsize = AtomicUsize::new(0);
 
 fn next_radio_group_name() -> String {

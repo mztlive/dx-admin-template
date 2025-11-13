@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 #[component]
 pub fn Card(#[props(into, default)] class: Option<String>, children: Element) -> Element {
     let classes = merge_class("ui-card", class);

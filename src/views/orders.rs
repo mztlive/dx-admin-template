@@ -992,7 +992,7 @@ pub fn Orders() -> Element {
                             {
                                 let selected_rows = use_signal(|| std::collections::HashSet::<String>::new());
                                 let selected_count = selected_rows().len();
-                                
+
                                 let columns = vec![
                                     TableColumnConfig {
                                         id: "number".to_string(),

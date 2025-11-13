@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 #[component]
 pub fn ScrollArea(
     #[props(into, default)] class: Option<String>,

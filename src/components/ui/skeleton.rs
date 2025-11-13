@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 #[component]
 pub fn Skeleton(
     #[props(into, default)] class: Option<String>,

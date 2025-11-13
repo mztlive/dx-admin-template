@@ -1,6 +1,6 @@
+use super::utils::merge_class;
 use crate::time::{Duration, NaiveDate};
 use dioxus::prelude::*;
-use super::utils::merge_class;
 const WEEKDAY_LABELS: [&str; 7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 fn first_day_of_month(date: NaiveDate) -> NaiveDate {

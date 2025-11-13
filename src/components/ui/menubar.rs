@@ -1,5 +1,5 @@
+use super::button::{Button, ButtonSize, ButtonVariant};
 use dioxus::prelude::*;
-use super::button::{Button, ButtonVariant, ButtonSize};
 
 #[derive(Clone, PartialEq)]
 pub struct MenubarItem {
@@ -111,15 +111,12 @@ fn MenubarMenuTrigger(
 }
 
 #[component]
-fn MenubarItemButton(
-    item: MenubarItem,
-    on_select: EventHandler<String>,
-) -> Element {
+fn MenubarItemButton(item: MenubarItem, on_select: EventHandler<String>) -> Element {
     let value = item.value.clone();
-    let variant = if item.destructive { 
-        ButtonVariant::Destructive 
-    } else { 
-        ButtonVariant::Ghost 
+    let variant = if item.destructive {
+        ButtonVariant::Destructive
+    } else {
+        ButtonVariant::Ghost
     };
 
     rsx! {
@@ -130,9 +127,9 @@ fn MenubarItemButton(
             on_click: move |_| on_select.call(value.clone()),
             span { "{item.label}" }
             if let Some(shortcut) = item.shortcut {
-                span { 
-                    style: "margin-left: auto; font-size: 0.75rem; opacity: 0.6;", 
-                    "{shortcut}" 
+                span {
+                    style: "margin-left: auto; font-size: 0.75rem; opacity: 0.6;",
+                    "{shortcut}"
                 }
             }
         }

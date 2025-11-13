@@ -1,7 +1,7 @@
+use super::utils::merge_class;
 use dioxus::html::events::{DragEvent, FormEvent};
 use dioxus::html::{FileData, HasFileData};
 use dioxus::prelude::*;
-use super::utils::merge_class;
 #[derive(Clone, Debug, PartialEq)]
 pub struct FileMetadata {
     pub name: String,

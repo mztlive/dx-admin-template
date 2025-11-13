@@ -1,6 +1,6 @@
+use super::utils::merge_class;
 use crate::components::ui::Toggle;
 use dioxus::prelude::*;
-use super::utils::merge_class;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ToggleGroupMode {
     Single,

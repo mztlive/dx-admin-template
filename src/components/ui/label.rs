@@ -1,8 +1,8 @@
-use dioxus::prelude::*;
 use super::utils::merge_class;
+use dioxus::prelude::*;
 
 /// Label component for form fields with consistent styling.
-/// 
+///
 /// # Example
 /// ```rust
 /// rsx! {

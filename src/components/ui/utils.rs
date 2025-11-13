@@ -29,10 +29,7 @@ mod tests {
 
     #[test]
     fn test_merge_class_with_extra() {
-        assert_eq!(
-            merge_class("base", Some("extra".to_string())),
-            "base extra"
-        );
+        assert_eq!(merge_class("base", Some("extra".to_string())), "base extra");
     }
 
     #[test]

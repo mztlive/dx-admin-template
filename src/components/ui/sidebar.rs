@@ -1,5 +1,5 @@
+use super::utils::{data_bool, merge_class};
 use dioxus::prelude::*;
-use super::utils::{merge_class, data_bool};
 #[component]
 pub fn Sidebar(
     #[props(default)] collapsed: bool,

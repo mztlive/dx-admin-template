@@ -1,5 +1,5 @@
+use super::button::{Button, ButtonSize, ButtonVariant};
 use dioxus::prelude::*;
-use super::button::{Button, ButtonVariant, ButtonSize};
 
 #[component]
 pub fn Pagination(
@@ -36,11 +36,11 @@ pub fn Pagination(
             for page in buttons {
                 {
                     if page == 0 {
-                        rsx! { 
-                            span { 
-                                class: "ui-pagination-ellipsis", 
-                                "…" 
-                            } 
+                        rsx! {
+                            span {
+                                class: "ui-pagination-ellipsis",
+                                "…"
+                            }
                         }
                     } else {
                         let is_active = current() == page;
