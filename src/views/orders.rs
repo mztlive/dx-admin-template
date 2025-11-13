@@ -990,7 +990,7 @@ pub fn Orders() -> Element {
                             // 示例2：InteractiveTable with 行选择 + 列可见性控制
                             h3 { style: "margin-top: 2rem;", "2. 高级数据表格 (InteractiveTable) - 行选择 + 列切换" }
                             {
-                                let mut selected_rows = use_signal(|| std::collections::HashSet::<String>::new());
+                                let selected_rows = use_signal(|| std::collections::HashSet::<String>::new());
                                 let selected_count = selected_rows().len();
                                 
                                 let columns = vec![
