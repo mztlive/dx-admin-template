@@ -96,7 +96,10 @@ impl NaiveDate {
     }
 
     pub fn format<'a>(self, pattern: &'a str) -> FormattedDate<'a> {
-        FormattedDate { date: self, pattern }
+        FormattedDate {
+            date: self,
+            pattern,
+        }
     }
 
     pub fn from_system_time(time: SystemTime) -> Option<Self> {
